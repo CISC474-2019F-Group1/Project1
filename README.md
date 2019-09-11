@@ -29,8 +29,13 @@ Division of Responsibility
 
 
 ● Alexandra Hurst - Ball + Physics
+
 ● Andrew Baldwin - Different Game Modes
+
 ● Devon Pirestani - Game Size + Borders and Collision
+
 ● Karl Stomberg - Landing/Menu Page
+
 ● Vince Sargeni - Brick Generation + Collisions
+
 ● Zhihao Zhang - Background & Other Artwork
