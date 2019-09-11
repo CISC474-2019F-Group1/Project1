@@ -1,6 +1,8 @@
 # Project1
 ## Proposal
+
 Project Description
+
   Our goal is to create a retro-themed ‘brick breaker’ style game. We plan on an initial
 start/menu screen to land on, with the ability to choose a different game mode. Tentatively,
 these will be Normal Mode, Zen Mode, and Hardcore/Challange mode. Normal mode will
@@ -11,7 +13,10 @@ misses, passing into the bottom frame. After the screen is cleared the bricks wi
 different locations. Zen mode will function similarly, but the user will have infinite lives and
 the game will continue until it has been quit. Finally, Hardcore/Challange mode will consist of
 a smaller paddle, faster moving balls, and/or multiple balls.
+
+
 Project Implementation
+
   We will use HTML5, CSS, and JavaScript with JQuery to complete the project.
 Animation and rendering will be accomplished through manipulation of the HTML DOM using
 JQuery where possible. We will aim to create an MVC architecture, with the rendering of the
@@ -21,6 +26,8 @@ different game modes build off a core set of functionality in a modular way. The
 loop, or controller, will reside in one file, with all the rendering code (the view) in another, and
 the domain model classes each in their own files as necessary.
 Division of Responsibility
+
+
 ● Alexandra Hurst - Ball + Physics
 ● Andrew Baldwin - Different Game Modes
 ● Devon Pirestani - Game Size + Borders and Collision
