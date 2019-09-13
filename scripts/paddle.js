@@ -4,11 +4,19 @@ function Paddle(){
     this.speed = 20;
     this.width = 200;
 
-    $('#paddle').css("width",this.width);
+    this.maxPosition = window.innerWidth - this.width;
 
-    this.updatePosition = function(amt){
+    $('#paddle').css("width", this.width);
 
-        this.position += amt;
+    this.updatePosition = function(direction, amt){
+
+        if((direction == 'left') && (this.position > 0)){
+            this.position -= amt;
+        }
+
+        if((direction == 'right') && (this.position < this.maxPosition)){
+            this.position += amt;
+        }
 
     }
 

@@ -3,14 +3,14 @@ $(document).keydown(function(event){
     // Left Key
     if(event.which == 37){
 
-        pad.updatePosition(pad.speed * -1);
+        pad.updatePosition('left', pad.speed);
 
     }
 
     // Right Key
     if(event.which == 39){
 
-        pad.updatePosition(pad.speed);
+        pad.updatePosition('right', pad.speed);
 
     }
 
