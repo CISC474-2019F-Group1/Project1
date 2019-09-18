@@ -1,4 +1,4 @@
-function Brick(){
+function Brick() {
 
     var strength;
     var powerup;
