@@ -2,9 +2,9 @@ function Paddle(){
 
     this.position = 100;
     this.speed = 20;
-    this.width = 200;
+    this.size = 200;
 
-    this.maxPosition = window.innerWidth - this.width;
+    this.maxPosition = window.innerWidth - this.size;
 
     $('#paddle').css("width", this.width);
 
