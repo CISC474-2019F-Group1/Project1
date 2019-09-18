@@ -2,7 +2,8 @@ function paddle() {
 
     this.position = 100;
     this.speed = 20;
-    this.size = 200;
+    // this.size = 200;
+    this.size = 100;
 
     this.maxPosition = window.innerWidth - this.size;
 

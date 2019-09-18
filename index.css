@@ -17,3 +17,16 @@ body, html{
     padding: 0px;
 
 }
+#ball{
+    border-radius: 50%;
+    position: absolute;
+    bottom: 400px;
+    left: 100px;
+    width: 25px;
+    height: 25px;
+    background-color: #000;
+    text-align:center; 
+    margin: 0px;
+    padding: 0px;
+
+}
