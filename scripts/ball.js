@@ -1,4 +1,4 @@
-function Ball() {
+function ball() {
 
     var changeableX;
     var changeableY;

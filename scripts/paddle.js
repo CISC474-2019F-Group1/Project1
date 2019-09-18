@@ -1,4 +1,4 @@
-function Paddle() {
+function paddle() {
 
     this.position = 100;
     this.speed = 20;
