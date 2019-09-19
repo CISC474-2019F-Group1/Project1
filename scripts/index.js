@@ -46,3 +46,16 @@ function writeFrame() {
 }
 
 window.requestAnimationFrame(writeFrame);
+
+function computer(ax,bx){
+    if((ax-bx)>0){
+        if(pad.position<window.innerWidth - pad.size){
+            pad.updatePosition('right', pad.speed/7);
+        }
+    }
+    else if((ax-bx)<0){
+        if(pad.position>0){
+            pad.updatePosition('left', pad.speed/7);}
+    }
+
+}
