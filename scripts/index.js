@@ -18,18 +18,18 @@ $(document).keydown(function (event) {
 
 });
 
-const pad = new Paddle();
-const ball = new ball();
+const pad = new paddle();
+const b1 = new ball();
 
 writeFrame();
 
 function update() {
     //comment this line if you play by yourself.
-    computer(ball.positionX,pad.position);
-    ball.updatePosition(pad.position);
+    computer(b1.positionX,pad.position);
+    b1.updatePosition(pad.position);
 
     $('#paddle').css("left", pad.position + "px");
-    $('#ball').css({"left": ball.positionX,"bottom":ball.positionY});
+    $('#ball').css({"left": b1.positionX,"bottom":b1.positionY});
     
 }
 
