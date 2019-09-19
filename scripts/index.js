@@ -24,7 +24,12 @@ $(document).ready(function (){
     $('#chooseGame').modal({backdrop: 'static', keyboard: false});
     $('#zenMode').click(function(){
         gameMode = true;
-        $('#chooseGame').modal({keyboard: true})
+    })
+    $('#normalMode').click(function(){
+        gameMode = true;
+    })
+    $('#hardCore').click(function(){
+        gameMode = true;
     })
     
 });
