@@ -1,4 +1,5 @@
-class deDuff {
+class debuff {
     constructor() {
 
+    }
 }

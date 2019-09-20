@@ -1,4 +1,3 @@
-
 let gameMode = false
 
 $(document).keydown(function (event) {
@@ -26,6 +25,7 @@ $(document).ready(function () {
     $('#hardCore').click(function () {
         gameMode = true;
     })
+    console.log(gameMode);
 });
 
 const pad = new paddle();
@@ -33,19 +33,19 @@ const b1 = new ball();
 
 function update() {
     //Comment this line if you play by yourself
-    computer(b1.positionX, pad.position);
+   // computer(b1.positionX, pad.position);
     b1.updatePosition(pad.position);
     $('#paddle').css("left", pad.position + "px");
     $('#ball').css({ "left": b1.positionX, "bottom": b1.positionY });
 }
 
-function computer(ax, bx) {
-    if ((ax - bx) > 0) {
+function computer(ballPos, padPos) {
+    if ((ballPos - padPos) > 0) {
         if (pad.position < window.innerWidth - pad.size) {
             pad.updatePosition('right', pad.speed / 7);
         }
     }
-    else if ((ax - bx) < 0) {
+    else if ((ballPos - padPos) < 0) {
         if (pad.position > 0) {
             pad.updatePosition('left', pad.speed / 7);
         }
