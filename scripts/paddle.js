@@ -15,6 +15,7 @@ class paddle {
             if ((direction == 'right') && (this.position < this.maxPosition)) {
                 this.position += amt;
             }
+            console.log('Paddle at: (' + this.position + ')');
         }
     }
 }
