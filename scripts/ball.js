@@ -1,10 +1,5 @@
 function ball() {
 
-    var changeableX;
-    var changeableY;
-    var startX;
-    var startY;
-
     this.positionX = 100;
     this.positionY = 300;
     this.speedX = 3;

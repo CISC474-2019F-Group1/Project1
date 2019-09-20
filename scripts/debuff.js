@@ -1,3 +1,4 @@
-function debuff() {
+class deDuff {
+    constructor() {
 
 }
