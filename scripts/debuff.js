@@ -1,3 +1,5 @@
-function debuff() {
+class debuff {
+    constructor() {
 
+    }
 }

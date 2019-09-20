@@ -1,10 +1,9 @@
-function brick() {
-
-    var strength;
-    var powerup;
-    var initX;
-    var initY;
-    var updateX;
-    var updateY;
-
+class brick {
+    constructor() {
+        this.strength;
+        this.powerup;
+        this.initX;
+        this.updateX;
+        this.updateY;
+    }
 }

@@ -1,3 +1,5 @@
-function powerUp() {
-
+class powerup {
+    constructor() {
+        
+    }
 }

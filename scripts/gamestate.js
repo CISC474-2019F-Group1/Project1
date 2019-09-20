@@ -1,8 +1,8 @@
-function gameState() {
-
-    var score;
-    var mode;
-    var activePowerup;
-    var level;
-
+class gameState {
+    constructor() {
+        this.score;
+        this.mode;
+        this.activePowerup;
+        this.level;
+    }
 }
