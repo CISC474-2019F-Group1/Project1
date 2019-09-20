@@ -34,6 +34,7 @@ class ball {
             //Move
             this.positionX += this.speedX;
             this.positionY += this.speedY;
+            console.log('Ball at: (' + this.positionX + ',' + this.positionY + ')');
         };
     }
 }
