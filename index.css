@@ -6,7 +6,6 @@ body, html{
 }
 
 #paddle{
-
     position: absolute;
     bottom: 50px;
     left: 200px;
@@ -15,7 +14,6 @@ body, html{
     background-color: #000;
     margin: 0px;
     padding: 0px;
-
 }
 
 #ball{
@@ -29,5 +27,4 @@ body, html{
     text-align:center; 
     margin: 0px;
     padding: 0px;
-
 }
