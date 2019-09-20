@@ -1,16 +1,28 @@
+
 let gameMode = false
 
 $(document).keydown(function(event){
     if(gameMode){
         // Left Key
         if(event.which == 37){
+=======
+$(document).keydown(function (event) {
+
+    // Left Key
+    if (event.which == 37) {
+
 
             pad.updatePosition('left', pad.speed);
 
         }
 
+
         // Right Key
         if(event.which == 39){
+=======
+    // Right Key
+    if (event.which == 39) {
+
 
             pad.updatePosition('right', pad.speed);
 
@@ -20,7 +32,7 @@ $(document).keydown(function(event){
 
 });
 
-$(document).ready(function (){
+    $(document).ready(function (){
     $('#chooseGame').modal({backdrop: 'static', keyboard: false});
     $('#zenMode').click(function(){
         gameMode = true;
@@ -35,16 +47,27 @@ $(document).ready(function (){
 });
 
 const pad = new Paddle();
+=======
+
+const pad = new paddle();
+const b1 = new ball();
+
 
 writeFrame();
 
-function update(){
+function update() {
 
-    $('#paddle').css("left",pad.position+"px");
+    //comment this line if you play by yourself.
+    computer(b1.positionX,pad.position);
+    b1.updatePosition(pad.position);
+
+    $('#paddle').css("left", pad.position + "px");
+    $('#ball').css({"left": b1.positionX,"bottom":b1.positionY});
+    
 
 }
 
-function writeFrame(){
+function writeFrame() {
 
     update();
     window.requestAnimationFrame(writeFrame);
@@ -52,3 +75,16 @@ function writeFrame(){
 }
 
 window.requestAnimationFrame(writeFrame);
+
+function computer(ax,bx){
+    if((ax-bx)>0){
+        if(pad.position<window.innerWidth - pad.size){
+            pad.updatePosition('right', pad.speed/7);
+        }
+    }
+    else if((ax-bx)<0){
+        if(pad.position>0){
+            pad.updatePosition('left', pad.speed/7);}
+    }
+
+}
