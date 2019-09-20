@@ -1,4 +1,3 @@
-
 let gameMode = false
 
 $(document).keydown(function (event) {
