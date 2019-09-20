@@ -2,60 +2,61 @@
 <html>
 
 <head>
-    <title>Smitty's Bricks</title>
-    <link rel="stylesheet" href="index.css">
-    <script src="/scripts/jquery-3.4.1.min.js"></script>
-    <!-- Bootstrap -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    <!-- Bootstrap theme -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-  </head>
+  <title>Smitty's Bricks</title>
+  <link rel="stylesheet" href="index.css">
+  <script src="/scripts/jquery-3.4.1.min.js"></script>
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+    integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+    integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+    crossorigin="anonymous"></script>
+  <!-- Bootstrap theme -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+    integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+</head>
 
 <body>
+  <div id="paddle"></div>
+  <div id="ball"></div>
 
-    <div id="paddle"></div>
-    <div id="ball"></div>
-  
-    <script src="/scripts/paddle.js"></script>
-    <script src="/scripts/ball.js"></script>
-    <script src="/scripts/brick.js"></script>
-    <script src="/scripts/debuff.js"></script>
-    <script src="/scripts/gamestate.js"></script>
-    <script src="/scripts/index.js"></script>
-    <script src="/scripts/jquery-3.4.1.min.js"></script>
-    <script src="/scripts/powerup.js"></script>
+  <script src="/scripts/paddle.js"></script>
+  <script src="/scripts/ball.js"></script>
+  <script src="/scripts/brick.js"></script>
+  <script src="/scripts/debuff.js"></script>
+  <script src="/scripts/gamestate.js"></script>
+  <script src="/scripts/index.js"></script>
+  <script src="/scripts/powerup.js"></script>
 
-
-    <!-- Opening Screen modal-->
-    <div id = "chooseGame" class="modal" tabindex="-1" role="dialog">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Welcome to BRICK BREAKER</h5>
-          </div>
-          <div class="modal-body">
-            <p>Modal body text goes here.</p>
-            <div class="row">
-              <div class="col-lg-4">
-                <button type="button" id = 'noramlMode' class="btn btn-lg btn-default" data-dismiss="modal" data-keyboard="true">Normal Mode</button>
-              </div>
-              <div class="col-lg-4">
-                <button type="button" id = 'zenMode' class="btn btn-lg btn-default" data-dismiss="modal" data-keyboard="true">Zen Mode</button>
-              </div>
-              <div class="col-lg-4">
-                <button type="button" id = 'hardCore' class="btn btn-lg btn-default" data-dismiss="modal" data-keyboard="true">Hardcore Mode</button>
-              </div>
+  <!-- Opening Screen modal-->
+  <div id="chooseGame" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Welcome to Smitty's Bricks</h5>
+        </div>
+        <div class="modal-body">
+          <p>Modal body text goes here.</p>
+          <div class="row">
+            <div class="col-lg-4">
+              <button type="button" id='normalMode' class="btn btn-lg btn-default" data-dismiss="modal"
+                data-keyboard="true">Normal Mode</button>
             </div>
-            
-            
-            
+            <div class="col-lg-4">
+              <button type="button" id='zenMode' class="btn btn-lg btn-default" data-dismiss="modal"
+                data-keyboard="true">Zen Mode</button>
+            </div>
+            <div class="col-lg-4">
+              <button type="button" id='hardCore' class="btn btn-lg btn-default" data-dismiss="modal"
+                data-keyboard="true">Hardcore Mode</button>
+            </div>
           </div>
-          <div class="modal-footer">
-          </div>
+        </div>
+        <div class="modal-footer">
         </div>
       </div>
     </div>
+  </div>
 </body>
 
 </html>
