@@ -24,7 +24,7 @@ writeFrame();
 
 function update() {
     //comment this line if you play by yourself.
-    computer(b1.positionX,pad.position);
+    //computer(b1.positionX,pad.position);
     b1.updatePosition(pad.position);
 
     $('#paddle').css("left", pad.position + "px");
@@ -53,3 +53,5 @@ function computer(ax,bx){
     }
 
 }
+
+gameState();
