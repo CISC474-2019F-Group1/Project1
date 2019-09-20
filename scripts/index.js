@@ -52,5 +52,10 @@ function computer(ax, bx) {
     }
 }
 
+function writeFrame() {
+    update();
+    window.requestAnimationFrame(writeFrame);
+}
+
 writeFrame();
 window.requestAnimationFrame(writeFrame);
