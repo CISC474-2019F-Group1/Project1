@@ -1,27 +1,56 @@
+
+let gameMode = false
+
+$(document).keydown(function(event){
+    if(gameMode){
+        // Left Key
+        if(event.which == 37){
+=======
 $(document).keydown(function (event) {
 
     // Left Key
     if (event.which == 37) {
 
-        pad.updatePosition('left', pad.speed);
 
-    }
+            pad.updatePosition('left', pad.speed);
 
+        }
+
+
+        // Right Key
+        if(event.which == 39){
+=======
     // Right Key
     if (event.which == 39) {
 
-        pad.updatePosition('right', pad.speed);
 
+            pad.updatePosition('right', pad.speed);
+
+        }
     }
-
     console.log(pad.position);
 
 });
 
+    $(document).ready(function (){
+    $('#chooseGame').modal({backdrop: 'static', keyboard: false});
+    $('#zenMode').click(function(){
+        gameMode = true;
+    })
+    $('#normalMode').click(function(){
+        gameMode = true;
+    })
+    $('#hardCore').click(function(){
+        gameMode = true;
+    })
+    
+});
+
+const pad = new Paddle();
+=======
 
 const pad = new paddle();
 const b1 = new ball();
-
 
 
 writeFrame();
