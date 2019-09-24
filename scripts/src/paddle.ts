@@ -7,10 +7,11 @@ class Paddle extends Rectangle {
                 y: number, 
                 width: number, 
                 height: number,
-                speed: number) {
+                speed: number,
+                maxPosition: number) {
         super(x, y, width, height);
         this.speed = speed;
-        this.maxPosition = window.innerWidth;
+        this.maxPosition = maxPosition;
         $('#paddle').css("width", this.width);
     }
     

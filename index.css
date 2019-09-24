@@ -1,4 +1,4 @@
-body, html{
+body{
     width: 100vw;
     height: 100vh;
     overflow-x: hidden;
@@ -24,6 +24,8 @@ body, html{
     position: absolute;
     margin: 0px;
     padding: 0px;
+    box-sizing: content-box;
+    border: 1px solid #000;
 }
 
 .strength-0{
