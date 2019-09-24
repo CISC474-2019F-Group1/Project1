@@ -40,7 +40,6 @@ class Ball {
         // Move
         this.x += this.vx * delta;
         this.y += this.vy * delta;
-        console.log("move");
         
         // Collide bricks
         for (let i: number = 0; i < bricks.length; i++) {
@@ -54,9 +53,11 @@ class Ball {
                 this.y = prevY;
                 
                 // Bounce
-                if (c.distX < c.distY) { // collision with horizontal side
+                if (Math.abs(c.distX) < Math.abs(c.distY)) { 
+                    // collision with horizontal side
                     this.vy = -this.vy;
-                } else {                 // collision with vertical side
+                } else {
+                    // collision with vertical side
                     this.vx = -this.vx;
                 }
                 
@@ -94,11 +95,13 @@ class Ball {
             this.y = prevY;
             
             // Bounce
-            if (c.distX < c.distY) { // collision with horizontal side
+            if (Math.abs(c.distX) < Math.abs(c.distY)) { 
+                // collision with horizontal side
                 this.vy = -this.vy;
                 this.vx = (this.x - paddle.getX()) / (paddle.getWidth() / 2) * 0.25; 
                 /* TODO remove "* 0.1" above and add real speed multiplier */
-            } else {                 // collision with vertical side
+            } else { 
+                // collision with vertical side
                 this.vx = -this.vx;
             }
             return;

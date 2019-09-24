@@ -22,7 +22,6 @@ class Paddle extends Rectangle {
         if ((direction == 'right') && (super.getRightX() < this.maxPosition)) {
             super.setX(super.getX() + this.speed);
         }
-        console.log('Paddle at: (' + super.getX() + ')');
     }
     
 }
