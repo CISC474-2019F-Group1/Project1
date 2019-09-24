@@ -1,14 +1,24 @@
 let gameMode = false
 
+let keysPressed: Set<string> = new Set();
+
 $(document).keydown(function (event) {
     if (gameMode) {
-        // Left Key
         if (event.which == 37) {
-            paddle.updatePosition('left');
+            keysPressed.add('left');
+        } else if (event.which == 39) {
+            keysPressed.add('right');
         }
-        //Right Key
+    }
+});
+
+$(document).keyup(function (event) {
+    if (gameMode) {
+        if (event.which == 37) {
+            keysPressed.delete('left');
+        }
         if (event.which == 39) {
-            paddle.updatePosition('right');
+            keysPressed.delete('right');
         }
     }
 });
@@ -27,7 +37,7 @@ $(document).ready(function () {
     console.log('Game Mode: ' + gameMode);
 });
 
-let paddle = new Paddle(100, 10, 200, 20, 20);
+let paddle = new Paddle(100, 10, 200, 20, 5);
 let ball = new Ball(window.innerWidth / 2, 100, -0.25, 0.5, 10);
 let board = new Board(0, window.innerWidth, window.innerHeight);
 let bricks = [
@@ -63,11 +73,16 @@ let delta: number = 0;
 let timestep: number = 1000 / 120;
 
 function update(delta: number) {
-    //Comment this line if you play by yourself
-   // computer(b1.positionX, pad.position);
-   if (gameMode) {
+    // Comment this line if you play by yourself
+    //computer(b1.positionX, pad.position);
+    if (gameMode) {
+        if (keysPressed.has('left') && !keysPressed.has('right')) {
+            paddle.updatePosition('left');
+        } else if (keysPressed.has('right') && !keysPressed.has('left')) {
+            paddle.updatePosition('right');
+        }
         ball.moveAndCollide(bricks, board, paddle, delta);
-   };
+    };
 }
 
 function draw() {
