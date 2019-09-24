@@ -22,5 +22,8 @@ var Brick = /** @class */ (function (_super) {
     Brick.prototype.decrementStrength = function () {
         this.strength -= 1;
     };
+    Brick.prototype.getStrength = function () {
+        return this.strength;
+    };
     return Brick;
 }(Rectangle));

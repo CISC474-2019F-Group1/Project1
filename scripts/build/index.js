@@ -26,20 +26,20 @@ $(document).ready(function () {
     console.log('Game Mode: ' + gameMode);
 });
 var paddle = new Paddle(100, 10, 200, 20, 20);
-var ball = new Ball(window.innerWidth / 2, 100, -15, 30, 10);
+var ball = new Ball(window.innerWidth / 2, 100, -0.25, 0.5, 10);
 var board = new Board(0, window.innerWidth, window.innerHeight);
-function update() {
-    //Comment this line if you play by yourself
-    // computer(b1.positionX, pad.position);
-    if (gameMode) {
-        ball.moveAndCollide([], board, paddle, 0.1);
-        $('#paddle').css({ "left": paddle.getLeftX() + "px",
-            "bottom": paddle.getBottomY() + "px",
-            "height": paddle.getHeight() + "px" });
-        $('#ball').css({ "left": ball.getX() - ball.getRadius(),
-            "bottom": ball.getY() - ball.getRadius() });
-    }
-    ;
+var bricks = [
+    new Brick(window.innerWidth / 2, window.innerHeight / 2, 100, 20, 3)
+];
+for (var i = 0; i < bricks.length; i++) {
+    $('#brick-container')
+        .append('<div id="brick-' + i + '"></div>');
+    $('#brick-' + i)
+        .css({ "left": bricks[i].getLeftX() + "px",
+        "bottom": bricks[i].getBottomY() + "px",
+        "width": bricks[i].getWidth() + "px",
+        "height": bricks[i].getHeight() + "px" })
+        .attr('class', 'brick strength-' + bricks[i].getStrength());
 }
 /*function computer(ballPos, padPos) {
     if ((ballPos - padPos) > 0) {
@@ -53,8 +53,54 @@ function update() {
         }
     }
 }*/
-function writeFrame() {
-    update();
-    window.requestAnimationFrame(writeFrame);
+var lastFrameTimeMs = 0;
+var maxFPS = 120;
+var delta = 0;
+var timestep = 1000 / 120;
+function update(delta) {
+    //Comment this line if you play by yourself
+    // computer(b1.positionX, pad.position);
+    if (gameMode) {
+        ball.moveAndCollide(bricks, board, paddle, delta);
+    }
+    ;
 }
-window.requestAnimationFrame(writeFrame);
+function draw() {
+    $('#paddle').css({ "left": paddle.getLeftX() + "px",
+        "bottom": paddle.getBottomY() + "px",
+        "height": paddle.getHeight() + "px" });
+    $('#ball').css({ "left": ball.getX() - ball.getRadius(),
+        "bottom": ball.getY() - ball.getRadius() });
+    for (var i = 0; i < bricks.length; i++) {
+        $('#brick-' + i)
+            .css({ "left": bricks[i].getLeftX() + "px",
+            "bottom": bricks[i].getBottomY() + "px",
+            "width": bricks[i].getWidth() + "px",
+            "height": bricks[i].getHeight() + "px" })
+            .attr('class', 'brick strength-' + bricks[i].getStrength());
+    }
+}
+function panic() {
+    delta = 0;
+}
+function mainLoop(timestamp) {
+    // Throttle the frame rate
+    if (timestamp < lastFrameTimeMs + (1000 / maxFPS)) {
+        requestAnimationFrame(mainLoop);
+        return;
+    }
+    delta += timestamp - lastFrameTimeMs;
+    lastFrameTimeMs = timestamp;
+    var numUpdateSteps = 0;
+    while (delta >= timestep) {
+        update(timestep);
+        delta -= timestep;
+        if (++numUpdateSteps >= 240) {
+            panic();
+            break;
+        }
+    }
+    draw();
+    requestAnimationFrame(mainLoop);
+}
+window.requestAnimationFrame(mainLoop);

@@ -31,6 +31,9 @@ var Ball = /** @class */ (function () {
         console.log("move");
         // Collide bricks
         for (var i = 0; i < bricks.length; i++) {
+            if (bricks[i].getStrength() < 1) {
+                continue;
+            }
             var c_1 = this.checkCollideRect(bricks[i]);
             if (c_1.hit) {
                 // Move back to position before collision
@@ -75,7 +78,8 @@ var Ball = /** @class */ (function () {
             // Bounce
             if (c.distX < c.distY) { // collision with horizontal side
                 this.vy = -this.vy;
-                this.vx = (this.x - paddle.getX()) / (paddle.getWidth() / 2) * 15;
+                this.vx = (this.x - paddle.getX()) / (paddle.getWidth() / 2) * 0.25;
+                /* TODO remove "* 0.1" above and add real speed multiplier */
             }
             else { // collision with vertical side
                 this.vx = -this.vx;

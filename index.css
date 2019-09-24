@@ -28,3 +28,25 @@ body, html{
     margin: 0px;
     padding: 0px;
 }
+
+.brick{
+    position: absolute;
+    margin: 0px;
+    padding: 0px;
+}
+
+.strength-0{
+    display: none;
+}
+
+.strength-1{
+    background-color: #F00;
+}
+
+.strength-2{
+    background-color: #FF0;
+}
+
+.strength-3{
+    background-color: #0F0;
+}

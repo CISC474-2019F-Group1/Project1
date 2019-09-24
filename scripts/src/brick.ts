@@ -14,4 +14,8 @@ class Brick extends Rectangle {
         this.strength -= 1;
     }
     
+    getStrength() {
+        return this.strength;
+    }
+    
 }

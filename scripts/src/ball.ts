@@ -44,6 +44,9 @@ class Ball {
         
         // Collide bricks
         for (let i: number = 0; i < bricks.length; i++) {
+            if (bricks[i].getStrength() < 1) {
+                continue;
+            }
             let c: any = this.checkCollideRect(bricks[i]);
             if (c.hit) {
                 // Move back to position before collision
@@ -93,8 +96,8 @@ class Ball {
             // Bounce
             if (c.distX < c.distY) { // collision with horizontal side
                 this.vy = -this.vy;
-                this.vx = (this.x - paddle.getX()) / (paddle.getWidth() / 2) * 15; 
-                /* TODO remove "* 15" above and add real speed multiplier */
+                this.vx = (this.x - paddle.getX()) / (paddle.getWidth() / 2) * 0.25; 
+                /* TODO remove "* 0.1" above and add real speed multiplier */
             } else {                 // collision with vertical side
                 this.vx = -this.vx;
             }

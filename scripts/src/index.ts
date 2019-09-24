@@ -28,20 +28,20 @@ $(document).ready(function () {
 });
 
 let paddle = new Paddle(100, 10, 200, 20, 20);
-let ball = new Ball(window.innerWidth / 2, 100, -15, 30, 10);
+let ball = new Ball(window.innerWidth / 2, 100, -0.25, 0.5, 10);
 let board = new Board(0, window.innerWidth, window.innerHeight);
-
-function update() {
-    //Comment this line if you play by yourself
-   // computer(b1.positionX, pad.position);
-   if (gameMode) {
-        ball.moveAndCollide([], board, paddle, 0.1);
-        $('#paddle').css({ "left": paddle.getLeftX() + "px",
-                           "bottom": paddle.getBottomY() + "px",
-                           "height": paddle.getHeight() + "px" });
-        $('#ball').css({ "left": ball.getX() - ball.getRadius(), 
-                         "bottom": ball.getY() - ball.getRadius() });
-   };
+let bricks = [
+    new Brick(window.innerWidth / 2, window.innerHeight / 2, 100, 20, 3)
+]
+for (let i: number = 0; i < bricks.length; i++) {
+    $('#brick-container')
+        .append('<div id="brick-' + i + '"></div>');
+    $('#brick-' + i)
+        .css({ "left": bricks[i].getLeftX() + "px",
+                   "bottom": bricks[i].getBottomY() + "px",
+                   "width": bricks[i].getWidth() + "px",
+                   "height": bricks[i].getHeight() + "px" })
+        .attr('class', 'brick strength-' + bricks[i].getStrength());
 }
 
 /*function computer(ballPos, padPos) {
@@ -57,9 +57,60 @@ function update() {
     }
 }*/
 
-function writeFrame() {
-    update();
-    window.requestAnimationFrame(writeFrame);
+let lastFrameTimeMs: number = 0;
+let maxFPS: number = 120;
+let delta: number = 0;
+let timestep: number = 1000 / 120;
+
+function update(delta: number) {
+    //Comment this line if you play by yourself
+   // computer(b1.positionX, pad.position);
+   if (gameMode) {
+        ball.moveAndCollide(bricks, board, paddle, delta);
+   };
 }
 
-window.requestAnimationFrame(writeFrame);
+function draw() {
+    $('#paddle').css({ "left": paddle.getLeftX() + "px",
+                       "bottom": paddle.getBottomY() + "px",
+                       "height": paddle.getHeight() + "px" });
+    $('#ball').css({ "left": ball.getX() - ball.getRadius(), 
+                     "bottom": ball.getY() - ball.getRadius() });
+                     
+    for (let i: number = 0; i < bricks.length; i++) {
+        $('#brick-' + i)
+            .css({ "left": bricks[i].getLeftX() + "px",
+                   "bottom": bricks[i].getBottomY() + "px",
+                   "width": bricks[i].getWidth() + "px",
+                   "height": bricks[i].getHeight() + "px" })
+            .attr('class', 'brick strength-' + bricks[i].getStrength());
+    }
+}
+
+function panic() {
+    delta = 0;
+}
+
+function mainLoop(timestamp: number) {
+    // Throttle the frame rate
+    if (timestamp < lastFrameTimeMs + (1000 / maxFPS)) {
+        requestAnimationFrame(mainLoop);
+        return;
+    }
+    delta += timestamp - lastFrameTimeMs;
+    lastFrameTimeMs = timestamp;
+    
+    let numUpdateSteps: number = 0;
+    while (delta >= timestep) {
+        update(timestep);
+        delta -= timestep;
+        if (++numUpdateSteps >= 240) {
+            panic();
+            break;
+        }
+    }
+    draw();
+    requestAnimationFrame(mainLoop);
+}
+
+window.requestAnimationFrame(mainLoop);
