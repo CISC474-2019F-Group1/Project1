@@ -37,8 +37,8 @@ $(document).ready(function () {
     console.log('Game Mode: ' + gameMode);
 });
 
-let paddle = new Paddle(100, 10, 200, 20, 5);
-let ball = new Ball(window.innerWidth / 2, 100, -0.25, 0.5, 10);
+let paddle = new Paddle(window.innerWidth / 2, 10, 200, 20, 5);
+let ball = new Ball(window.innerWidth / 2, 100, 0, -0.5, 10);
 let board = new Board(0, window.innerWidth, window.innerHeight);
 let bricks = [
     new Brick(window.innerWidth / 2, window.innerHeight / 2, 100, 20, 3)
@@ -88,9 +88,12 @@ function update(delta: number) {
 function draw() {
     $('#paddle').css({ "left": paddle.getLeftX() + "px",
                        "bottom": paddle.getBottomY() + "px",
-                       "height": paddle.getHeight() + "px" });
+                       "height": paddle.getHeight() + "px",
+                       "width": paddle.getWidth() + "px" });
     $('#ball').css({ "left": ball.getX() - ball.getRadius(), 
-                     "bottom": ball.getY() - ball.getRadius() });
+                     "bottom": ball.getY() - ball.getRadius(),
+                     "height": ball.getRadius() * 2,
+                     "width": ball.getRadius() * 2 });
                      
     for (let i: number = 0; i < bricks.length; i++) {
         $('#brick-' + i)

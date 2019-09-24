@@ -98,7 +98,7 @@ class Ball {
             if (Math.abs(c.distX) < Math.abs(c.distY)) { 
                 // collision with horizontal side
                 this.vy = -this.vy;
-                this.vx = (this.x - paddle.getX()) / (paddle.getWidth() / 2) * 0.25; 
+                this.vx = (this.x - paddle.getX()) / (paddle.getWidth() / 2) * 0.5; 
                 /* TODO remove "* 0.1" above and add real speed multiplier */
             } else { 
                 // collision with vertical side
