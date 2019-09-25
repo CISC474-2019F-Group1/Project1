@@ -54,7 +54,7 @@ for (let j: number = 0; j < 10; j++) {
     for (let i: number = 0; i < 10; i++) {
         let x: number = (i * BRICK_WIDTH) + (BRICK_WIDTH / 2);
         let y: number = BOARD_HEIGHT - (j * BRICK_HEIGHT) - (BRICK_HEIGHT / 2);
-        bricks.push(new Brick(x, y, BRICK_WIDTH, BRICK_HEIGHT, 3));
+        bricks.push(new Brick(x, y, BRICK_WIDTH, BRICK_HEIGHT, 3, 0, 0));
     }
 }
 let bricksJSON = JSON.stringify(bricks);
@@ -92,6 +92,9 @@ function update(delta: number) {
             paddle.updatePosition('right');
         }
         ball.moveAndCollide(bricks, board, paddle, delta);
+        for (let i: number = 0; i < bricks.length; i++) {
+            bricks[i].updateBrick();
+        }
     };
 }
 
