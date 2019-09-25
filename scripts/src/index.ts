@@ -37,43 +37,31 @@ $(document).ready(function () {
     console.log('Game Mode: ' + gameMode);
 });
 
-let board = new Board(0, 1000, 750);
-let paddle = new Paddle(1000 / 2, 10, 200, 20, 5, board.getRightEdgeX());
-let ball = new Ball(1000 / 2, 100, 0, -0.5, 10);
-let bricks = [
-    new Brick(0 * 100 + (100 / 2), 0 * 20 + (20 / 2) + 710, 100, 20, 3),
-    new Brick(1 * 100 + (100 / 2), 0 * 20 + (20 / 2) + 710, 100, 20, 3),
-    new Brick(2 * 100 + (100 / 2), 0 * 20 + (20 / 2) + 710, 100, 20, 3),
-    new Brick(3 * 100 + (100 / 2), 0 * 20 + (20 / 2) + 710, 100, 20, 3),
-    new Brick(4 * 100 + (100 / 2), 0 * 20 + (20 / 2) + 710, 100, 20, 3),
-    new Brick(5 * 100 + (100 / 2), 0 * 20 + (20 / 2) + 710, 100, 20, 3),
-    new Brick(6 * 100 + (100 / 2), 0 * 20 + (20 / 2) + 710, 100, 20, 3),
-    new Brick(7 * 100 + (100 / 2), 0 * 20 + (20 / 2) + 710, 100, 20, 3),
-    new Brick(8 * 100 + (100 / 2), 0 * 20 + (20 / 2) + 710, 100, 20, 3),
-    new Brick(9 * 100 + (100 / 2), 0 * 20 + (20 / 2) + 710, 100, 20, 3),    
-    new Brick(0 * 100 + (100 / 2), 1 * 20 + (20 / 2) + 710, 100, 20, 3),
-    new Brick(1 * 100 + (100 / 2), 1 * 20 + (20 / 2) + 710, 100, 20, 3),
-    new Brick(2 * 100 + (100 / 2), 1 * 20 + (20 / 2) + 710, 100, 20, 3),
-    new Brick(3 * 100 + (100 / 2), 1 * 20 + (20 / 2) + 710, 100, 20, 3),
-    new Brick(4 * 100 + (100 / 2), 1 * 20 + (20 / 2) + 710, 100, 20, 3),
-    new Brick(5 * 100 + (100 / 2), 1 * 20 + (20 / 2) + 710, 100, 20, 3),
-    new Brick(6 * 100 + (100 / 2), 1 * 20 + (20 / 2) + 710, 100, 20, 3),
-    new Brick(7 * 100 + (100 / 2), 1 * 20 + (20 / 2) + 710, 100, 20, 3),
-    new Brick(8 * 100 + (100 / 2), 1 * 20 + (20 / 2) + 710, 100, 20, 3),
-    new Brick(9 * 100 + (100 / 2), 1 * 20 + (20 / 2) + 710, 100, 20, 3)
-]
+const INFO_HEIGHT = 50;
+const BOARD_HEIGHT = 750;
+const BOARD_WIDTH = 1000;
+const GAME_WIDTH = BOARD_WIDTH;
+const GAME_HEIGHT = BOARD_HEIGHT + INFO_HEIGHT;
+
+const BRICK_WIDTH = BOARD_WIDTH / 10;
+const BRICK_HEIGHT = BRICK_WIDTH / 2;
+
+let board = new Board(0, BOARD_WIDTH, BOARD_HEIGHT);
+let paddle = new Paddle(BOARD_WIDTH / 2, 10, 200, 20, 5, board.getRightEdgeX());
+let ball = new Ball(BOARD_WIDTH / 2, 100, 0, -0.5, 10);
+let bricks: Brick[] = [];
+for (let j: number = 0; j < 10; j++) {
+    for (let i: number = 0; i < 10; i++) {
+        let x: number = (i * BRICK_WIDTH) + (BRICK_WIDTH / 2);
+        let y: number = BOARD_HEIGHT - (j * BRICK_HEIGHT) - (BRICK_HEIGHT / 2);
+        bricks.push(new Brick(x, y, BRICK_WIDTH, BRICK_HEIGHT, 3));
+    }
+}
 let bricksJSON = JSON.stringify(bricks);
 console.log(bricksJSON);
 console.log(<Brick[]> JSON.parse(bricksJSON));
 for (let i: number = 0; i < bricks.length; i++) {
-    $('#brick-container')
-        .append('<div id="brick-' + i + '"></div>');
-    $('#brick-' + i)
-        .css({ "left": bricks[i].getLeftX() + "px",
-               "bottom": bricks[i].getBottomY() + "px",
-               "width": (bricks[i].getWidth() - 1) + "px",
-               "height": (bricks[i].getHeight() -1) + "px" })
-        .attr('class', 'brick strength-' + bricks[i].getStrength());
+    $('#brick-container').append('<div id="brick-' + i + '"></div>');
 }
 
 /*function computer(ballPos, padPos) {
@@ -108,9 +96,10 @@ function update(delta: number) {
 }
 
 function draw() {
-    let scale: number = Math.min(window.innerHeight / 800, window.innerWidth / 1000);
-    let xOffset: number = (window.innerWidth - (1000 * scale)) / 2;
-    let yOffset: number = (window.innerHeight - (800 * scale)) / 2;;
+    let scale: number = Math.min(window.innerWidth / GAME_WIDTH, 
+                                 window.innerHeight / GAME_HEIGHT);
+    let xOffset: number = (window.innerWidth - (GAME_WIDTH * scale)) / 2;
+    let yOffset: number = (window.innerHeight - (GAME_HEIGHT * scale)) / 2;;
     $('#paddle').css({ "left": (paddle.getLeftX() * scale) + xOffset,
                        "bottom": (paddle.getBottomY() * scale) + yOffset,
                        "height": paddle.getHeight() * scale,
@@ -124,8 +113,8 @@ function draw() {
         $('#brick-' + i)
             .css({ "left": (bricks[i].getLeftX() * scale) + xOffset,
                    "bottom": (bricks[i].getBottomY() * scale) + yOffset,
-                   "width": (bricks[i].getWidth() - 1) * scale,
-                   "height": (bricks[i].getHeight() - 1) * scale })
+                   "width": bricks[i].getWidth() * scale,
+                   "height": bricks[i].getHeight() * scale })
             .attr('class', 'brick strength-' + bricks[i].getStrength());
     }
 }

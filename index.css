@@ -24,8 +24,8 @@ body{
     position: absolute;
     margin: 0px;
     padding: 0px;
-    box-sizing: content-box;
-    border: 1px solid #000;
+    box-sizing: border-box;
+    border: 1px outset #FFF;
 }
 
 .strength-0{
