@@ -20,8 +20,8 @@ class Brick extends Rectangle {
         this.initY = y;
         this.endX = endX;
         this.endY = endY;
-        this.speedX = 10;
-        this.speedY = 10;
+        this.speedX = 1;
+        this.speedY = 1;
     }
     
     decrementStrength() {

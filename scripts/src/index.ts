@@ -54,7 +54,7 @@ for (let j: number = 0; j < 10; j++) {
     for (let i: number = 0; i < 10; i++) {
         let x: number = (i * BRICK_WIDTH) + (BRICK_WIDTH / 2);
         let y: number = BOARD_HEIGHT - (j * BRICK_HEIGHT) - (BRICK_HEIGHT / 2);
-        bricks.push(new Brick(x, y, BRICK_WIDTH, BRICK_HEIGHT, 3, 0, 0));
+        bricks.push(new Brick(x, y, BRICK_WIDTH, BRICK_HEIGHT, 3, x + 100, y + 100));
     }
 }
 let bricksJSON = JSON.stringify(bricks);
