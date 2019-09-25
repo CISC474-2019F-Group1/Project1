@@ -3,11 +3,13 @@ body{
     height: 100vh;
     overflow-x: hidden;
     overflow-y: hidden;
+    background-image: url("/scripts/src/Images/background.png");
 }
 
 #paddle{
     position: absolute;
-    background-color: #000;
+    border-radius: 25px;
+    background-color: white;
     margin: 0px;
     padding: 0px;
 }
@@ -15,7 +17,7 @@ body{
 #ball{
     border-radius: 50%;
     position: absolute;
-    background-color: #000;
+    background-color: white;
     margin: 0px;
     padding: 0px;
 }
