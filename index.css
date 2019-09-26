@@ -3,7 +3,25 @@ body{
     height: 100vh;
     overflow-x: hidden;
     overflow-y: hidden;
-    background-image: url("/scripts/src/Images/background.png");
+    background-image: url("images/background.png");
+}
+
+#score{
+    margin: 5px;
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    text-decoration: underline;
+    color: #ffffff; 
+}
+
+#lives{
+    margin: 5px;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    text-decoration: underline;
+    color: #ffffff; 
 }
 
 #paddle{

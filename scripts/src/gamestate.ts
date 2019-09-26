@@ -1,16 +1,52 @@
-class gameState {
+class GameState {
     score: number;
-    mode: number;
-    activePowerup: Powerup;
+    lives: number;
     level: number;
+    activePowerUp: PowerUp;
+    gameMode: string;
     
     constructor(score: number,
-                mode: number,
-                activePowerup: Powerup,
-                level: number) {
+                lives: number,
+                level: number,
+                activePowerUp: PowerUp,
+                gameMode: string) {
         this.score = score;
-        this.mode = mode;
-        this.activePowerup = activePowerup;
+        this.activePowerUp = activePowerUp;
         this.level = level;
+        this.lives = lives;
+        this.gameMode = gameMode;
+    }
+
+    setGameMode(str:string) {
+        this.gameMode = str;
+    }
+
+    decrementScoreBy(num:number) {
+        this.score -= num;
+    }
+
+    incrementScoreBy(num:number) {
+        this.score += num;
+    }
+
+    decrementLives() {
+        this.lives -= 1;
+    }
+
+    incrementLives() {
+        this.lives += 1;
+    }
+
+
+    getScore() {
+        return this.score;
+    }
+    
+    getLives() {
+        return this.lives;
+    }
+
+    getGameMode() {
+        return this.gameMode;
     }
 }
