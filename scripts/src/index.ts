@@ -101,8 +101,12 @@ function update(delta: number) {
             paddle.updatePosition('left');
         } else if (keysPressed.has('right') && !keysPressed.has('left')) {
             paddle.updatePosition('right');
-        } else if (keysPressed.has('space') && !keysPressed.has('right') && !keysPressed.has('left')) {
-            ball.setVY(-.4);
+        } else if (ball.getVY() == 0) {
+            document.querySelector<HTMLElement>("#hints")!.innerHTML = "Press space to drop the ball";
+            if (keysPressed.has('space') && !keysPressed.has('right') && !keysPressed.has('left')){
+                ball.setVY(-.4);
+                document.querySelector<HTMLElement>("#hints")!.innerHTML = "";
+            }
         }
         ball.moveAndCollide(gameState, bricks, board, paddle, delta);
     };
