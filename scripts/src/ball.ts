@@ -69,6 +69,8 @@ class Ball {
                 bricks[i].decrementStrength();
                 if (bricks[i].getStrength() < 1) { 
                     gameState.incrementScoreBy(5);
+                } else if (bricks[i].getStrength() == 1) {
+                    gameState.incrementScoreBy(2);
                 } else {
                     gameState.incrementScoreBy(1);
                 }
