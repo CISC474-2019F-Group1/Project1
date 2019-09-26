@@ -1,24 +1,30 @@
-let gameMode = false
+let gameStart = false
+let gameMode = "";
 
 let keysPressed: Set<string> = new Set();
 
 $(document).keydown(function (event) {
-    if (gameMode) {
+    if (gameStart) {
         if (event.which == 37) {
             keysPressed.add('left');
         } else if (event.which == 39) {
             keysPressed.add('right');
+        } else if (event.which == 32) {
+            keysPressed.add('space');
         }
     }
 });
 
 $(document).keyup(function (event) {
-    if (gameMode) {
+    if (gameStart) {
         if (event.which == 37) {
             keysPressed.delete('left');
         }
         if (event.which == 39) {
             keysPressed.delete('right');
+        } 
+        if (event.which == 32) {
+            keysPressed.delete('space');
         }
     }
 });
@@ -26,15 +32,18 @@ $(document).keyup(function (event) {
 $(document).ready(function () {
     $('#chooseGame').modal({ backdrop: 'static', keyboard: false });
     $('#zenMode').click(function () {
-        gameMode = true;
+        gameStart = true;
+        gameMode = "ZenMode";
     })
     $('#normalMode').click(function () {
-        gameMode = true;
+        gameStart = true;
+        gameMode = "NormalMode";
     })
     $('#hardCore').click(function () {
-        gameMode = true;
+        gameStart = true;
+        gameMode = "HardCoreMode";
     })
-    console.log('Game Mode: ' + gameMode);
+    console.log('Game Mode: ' + gameStart);
 });
 
 const INFO_HEIGHT = 50;
@@ -46,9 +55,11 @@ const GAME_HEIGHT = BOARD_HEIGHT + INFO_HEIGHT;
 const BRICK_WIDTH = BOARD_WIDTH / 10;
 const BRICK_HEIGHT = BRICK_WIDTH / 2;
 
-let board = new Board(0, BOARD_WIDTH, BOARD_HEIGHT);
+let powerUp = new PowerUp("None");
+let gameState = new GameState(0, 3, 0, powerUp, gameMode);
+let board = new Board(0, BOARD_WIDTH, BOARD_HEIGHT, 0);
 let paddle = new Paddle(BOARD_WIDTH / 2, 10, 200, 20, 5, board.getRightEdgeX());
-let ball = new Ball(BOARD_WIDTH / 2, 100, 0, -0.5, 10);
+let ball = new Ball(BOARD_WIDTH / 2, 100, 0, 0, 10);
 let bricks: Brick[] = [];
 for (let j: number = 0; j < 10; j++) {
     for (let i: number = 0; i < 10; i++) {
@@ -85,13 +96,15 @@ let timestep: number = 1000 / 120;
 function update(delta: number) {
     // Comment this line if you play by yourself
     //computer(b1.positionX, pad.position);
-    if (gameMode) {
+    if (gameStart) {
         if (keysPressed.has('left') && !keysPressed.has('right')) {
             paddle.updatePosition('left');
         } else if (keysPressed.has('right') && !keysPressed.has('left')) {
             paddle.updatePosition('right');
+        } else if (keysPressed.has('space') && !keysPressed.has('right') && !keysPressed.has('left')) {
+            ball.setVY(-.4);
         }
-        ball.moveAndCollide(bricks, board, paddle, delta);
+        ball.moveAndCollide(gameState, bricks, board, paddle, delta);
     };
 }
 
@@ -99,7 +112,9 @@ function draw() {
     let scale: number = Math.min(window.innerWidth / GAME_WIDTH, 
                                  window.innerHeight / GAME_HEIGHT);
     let xOffset: number = (window.innerWidth - (GAME_WIDTH * scale)) / 2;
-    let yOffset: number = (window.innerHeight - (GAME_HEIGHT * scale)) / 2;;
+    let yOffset: number = (window.innerHeight - (GAME_HEIGHT * scale)) / 2;
+    document.querySelector<HTMLElement>("#score")!.innerHTML = "Score: " + String(gameState.getScore());
+    document.querySelector<HTMLElement>("#lives")!.innerHTML = "Lives: " + String(gameState.getLives());
     $('#paddle').css({ "left": (paddle.getLeftX() * scale) + xOffset,
                        "bottom": (paddle.getBottomY() * scale) + yOffset,
                        "height": paddle.getHeight() * scale,

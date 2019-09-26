@@ -2,13 +2,16 @@ class Board {
     leftEdgeX: number;
     rightEdgeX: number;
     topEdgeY: number;
+    bottomEdgeY: number;
     
     constructor(leftEdgeX: number, 
                 rightEdgeX: number, 
-                topEdgeY: number) {
+                topEdgeY: number,
+                bottomEdgeY: number) {
         this.leftEdgeX = leftEdgeX;
         this.rightEdgeX = rightEdgeX;
         this.topEdgeY = topEdgeY;
+        this.bottomEdgeY = bottomEdgeY;
     }
     
     getLeftEdgeX() {
@@ -21,5 +24,9 @@ class Board {
     
     getTopEdgeY() {
         return this.topEdgeY;
+    }
+
+    getBottomEdgeY() {
+        return this.bottomEdgeY;
     }
 }
