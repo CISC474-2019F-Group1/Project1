@@ -59,7 +59,7 @@ const GAME_HEIGHT = BOARD_HEIGHT + INFO_HEIGHT;
 const BRICK_WIDTH = BOARD_WIDTH / 10;
 const BRICK_HEIGHT = BRICK_WIDTH / 2;
 
-let powerUp = new PowerUp("None");
+let powerUp = new Powerup(0, 0);
 let gameState = new GameState(0, 3, 0, powerUp, gameMode);
 let board = new Board(0, BOARD_WIDTH, BOARD_HEIGHT, 0);
 let paddle = new Paddle(BOARD_WIDTH / 2, 10, 200, 20, 5, board.getRightEdgeX());
@@ -123,7 +123,7 @@ function update(delta: number) {
                 document.querySelector<HTMLElement>("#hints")!.innerHTML = "";
             }
         }
-        ball.moveAndCollide(bricks, board, paddle, delta);
+        ball.moveAndCollide(gameState, bricks, board, paddle, delta);
         for (let i: number = 0; i < bricks.length; i++) {
             bricks[i].updateBrick();
             // Create powerup if one was in brick
