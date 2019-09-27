@@ -54,11 +54,13 @@ for (let j: number = 0; j < 10; j++) {
     for (let i: number = 0; i < 10; i++) {
         let x: number = (i * BRICK_WIDTH) + (BRICK_WIDTH / 2);
         let y: number = BOARD_HEIGHT - (j * BRICK_HEIGHT) - (BRICK_HEIGHT / 2);
+        // Generate random powerup
         let rand: number = Math.floor(Math.random() * 15);
         if(rand > 3){
             rand = 0;
         }
         let p = new Powerup(rand, 15);
+        // Add brick
         bricks.push(new Brick(x, y, BRICK_WIDTH, BRICK_HEIGHT, 3, x + 100, y + 100, p));
     }
 }
@@ -99,10 +101,12 @@ function update(delta: number) {
         ball.moveAndCollide(bricks, board, paddle, delta);
         for (let i: number = 0; i < bricks.length; i++) {
             bricks[i].updateBrick();
+            // Create powerup if one was in brick
             if(bricks[i].strength == 0){
                 $('#powerup-container').append('<div id="powerup-' + i + '" class="powerup powerup-' + bricks[i].powerup.getPid() + '"></div>');
                 bricks[i].strength = -1;
             }
+            // Update all powerups
             if(bricks[i].strength < 0){
                 bricks[i].powerup.updatePowerup();
             }

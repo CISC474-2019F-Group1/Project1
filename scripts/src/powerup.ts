@@ -2,9 +2,9 @@ class Powerup {
 
     /*
        0 - no powerup
-       1 - ???
-       2 - ???
-       3 - ???
+       1 - super strength
+       2 - solid floor
+       3 - bigger paddle
     */
 
     pid: number;
@@ -12,6 +12,7 @@ class Powerup {
     state: string;
     x: number;
     y: number;
+    radius: number;
 
     constructor(p: number, d: number) {
         
@@ -20,6 +21,7 @@ class Powerup {
         this.state = 'block';
         this.x = 0;
         this.y = 0;
+        this.radius = 15
 
     }
 
@@ -69,6 +71,32 @@ class Powerup {
 
         }
 
+        if(this.checkCollideRect(paddle)){
+
+            console.log("Collided");
+
+        }
+
+    }
+
+    checkCollideRect(rect: Rectangle) {
+        let testX: number = this.x;
+        var testY: number = this.y;
+        
+        if      (this.x < rect.getLeftX())   { testX = rect.getLeftX() }
+        else if (this.x > rect.getRightX())  { testX = rect.getRightX() }
+        if      (this.y < rect.getBottomY()) { testY = rect.getBottomY() }
+        else if (this.y > rect.getTopY())    { testY = rect.getTopY() }
+        
+        let distX: number = this.x - testX;
+        let distY: number = this.y - testY;
+        let distance: number = Math.sqrt(distX * distX + distY * distY);
+        
+        return {
+            "hit" : distance <= this.radius,
+            "distX" : distX,
+            "distY" : distY
+        };
     }
 
 }
