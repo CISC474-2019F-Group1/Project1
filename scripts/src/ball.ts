@@ -12,6 +12,10 @@ class Ball {
         this.vy = vy;
         this.radius = radius;
     }
+
+    setVY(num:number) {
+        this.vy = num;
+    }
     
     getX() {
         return this.x;
@@ -33,7 +37,7 @@ class Ball {
         return this.radius;
     }
     
-    moveAndCollide(bricks: Brick[], board: Board, paddle: Paddle, delta: number) {
+    moveAndCollide(gameState: GameState, bricks: Brick[], board: Board, paddle: Paddle, delta: number) {
         let prevX: number = this.x;
         let prevY: number = this.y;
         
@@ -54,15 +58,23 @@ class Ball {
                 
                 // Bounce
                 if (Math.abs(c.distX) < Math.abs(c.distY)) { 
-                    // collision with horizontal side
+                    // Collision with horizontal side
                     this.vy = -this.vy;
                 } else {
-                    // collision with vertical side
+                    // Collision with vertical side
                     this.vx = -this.vx;
                 }
                 
                 // Lower strength of brick
                 bricks[i].decrementStrength();
+                if (bricks[i].getStrength() < 1) { 
+                    gameState.incrementScoreBy(5);
+                } else if (bricks[i].getStrength() == 1) {
+                    gameState.incrementScoreBy(2);
+                } else {
+                    gameState.incrementScoreBy(1);
+                }
+                
                 return;
             }
         }
@@ -85,6 +97,19 @@ class Ball {
             // Bounce
             this.vy = -this.vy;
             return;
+        } else if (this.y - board.getBottomEdgeY() < this.radius) {
+            // Move back to original position
+            this.x = BOARD_WIDTH / 2;
+            this.y = 100;
+            this.vx = 0; 
+            this.vy = 0;
+            this.radius = 10;
+            gameState.decrementLives();
+            if (gameState.getLives() < 1) {
+                gameState.decrementScoreBy(gameState.getScore());
+                for (let i:number = 0; i<3; i++) { gameState.incrementLives(); }
+            }
+            return;
         }
         
         // Collide paddle
@@ -96,12 +121,12 @@ class Ball {
             
             // Bounce
             if (Math.abs(c.distX) < Math.abs(c.distY)) { 
-                // collision with horizontal side
+                // Collision with horizontal side
                 this.vy = -this.vy;
                 this.vx = (this.x - paddle.getX()) / (paddle.getWidth() / 2) * 0.5; 
                 /* TODO remove "* 0.1" above and add real speed multiplier */
             } else { 
-                // collision with vertical side
+                // Collision with vertical side
                 this.vx = -this.vx;
             }
             return;

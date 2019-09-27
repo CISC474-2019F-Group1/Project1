@@ -3,11 +3,40 @@ body{
     height: 100vh;
     overflow-x: hidden;
     overflow-y: hidden;
+    background-image: url("images/background.png");
+}
+
+#score{
+    margin: 5px;
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    text-decoration: underline;
+    color: #ffffff; 
+}
+
+#hints{
+    margin: 5px;
+    display: flex;  
+    align-items: center;
+    justify-content: center;
+    font-style: italic;
+    color: #ffffff; 
+}
+
+#lives{
+    margin: 5px;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    text-decoration: underline;
+    color: #ffffff; 
 }
 
 #paddle{
     position: absolute;
-    background-color: #000;
+    border-radius: 25px;
+    background-color: #ffffff;
     margin: 0px;
     padding: 0px;
 }
@@ -15,7 +44,7 @@ body{
 #ball{
     border-radius: 50%;
     position: absolute;
-    background-color: #000;
+    background-color: #ffffff;
     margin: 0px;
     padding: 0px;
 }
