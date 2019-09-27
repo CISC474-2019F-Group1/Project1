@@ -43,6 +43,10 @@ $(document).ready(function () {
         gameStart = true;
         gameMode = "HardCoreMode";
     })
+    $('#aiLab').click(function () {
+        gameStart = true;
+        gameMode = "AILAB";
+    })
     console.log('Game Mode: ' + gameStart);
 });
 
@@ -75,18 +79,18 @@ for (let i: number = 0; i < bricks.length; i++) {
     $('#brick-container').append('<div id="brick-' + i + '"></div>');
 }
 
-/*function computer(ballPos, padPos) {
-    if ((ballPos - padPos) > 0) {
-        if (pad.position < window.innerWidth - pad.size) {
-            pad.updatePosition('right', pad.speed / 7);
+function computer() {
+    if ((ball.getX() - paddle.getX()-paddle.width*0.1) > paddle.width*0.2) {
+        if (paddle.getX() < window.innerWidth - paddle.width) {
+            paddle.updatePosition('right');
         }
     }
-    else if ((ballPos - padPos) < 0) {
-        if (pad.position > 0) {
-            pad.updatePosition('left', pad.speed / 7);
+    else if ((ball.getX() - paddle.getX()-paddle.width*0.1) < paddle.width*0.2) {
+        if (paddle.getX() > 0) {
+            paddle.updatePosition('left');
         }
     }
-}*/
+}
 
 let lastFrameTimeMs: number = 0;
 let maxFPS: number = 120;
@@ -97,6 +101,10 @@ function update(delta: number) {
     // Comment this line if you play by yourself
     //computer(b1.positionX, pad.position);
     if (gameStart) {
+        if(gameMode == 'AILAB'){
+            console.log('ai running');
+            computer();
+        }
         if (keysPressed.has('left') && !keysPressed.has('right')) {
             paddle.updatePosition('left');
         } else if (keysPressed.has('right') && !keysPressed.has('left')) {
