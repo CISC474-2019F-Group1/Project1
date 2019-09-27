@@ -47,14 +47,16 @@ $(document).ready(function () {
         gameStart = true;
         gameMode = "AILAB";
     })
+    $('#levelEditor').click(function () {
+        gameStart = true;
+        gameMode = "LevelEditor";
+    })
     console.log('Game Mode: ' + gameStart);
 });
 
-const INFO_HEIGHT = 50;
+const HEADER_HEIGHT = 50;
 const BOARD_HEIGHT = 750;
 const BOARD_WIDTH = 1000;
-const GAME_WIDTH = BOARD_WIDTH;
-const GAME_HEIGHT = BOARD_HEIGHT + INFO_HEIGHT;
 
 const BRICK_WIDTH = BOARD_WIDTH / 10;
 const BRICK_HEIGHT = BRICK_WIDTH / 2;
@@ -121,12 +123,12 @@ function update(delta: number) {
 }
 
 function draw() {
-    let scale: number = Math.min(window.innerWidth / GAME_WIDTH, 
-                                 window.innerHeight / GAME_HEIGHT);
-    let xOffset: number = (window.innerWidth - (GAME_WIDTH * scale)) / 2;
-    let yOffset: number = (window.innerHeight - (GAME_HEIGHT * scale)) / 2;
-    document.querySelector<HTMLElement>("#score")!.innerHTML = "Score: " + String(gameState.getScore());
-    document.querySelector<HTMLElement>("#lives")!.innerHTML = "Lives: " + String(gameState.getLives());
+    let scale: number = Math.min(window.innerWidth / BOARD_WIDTH, 
+                                 (window.innerHeight - HEADER_HEIGHT) / BOARD_HEIGHT);
+    let xOffset: number = (window.innerWidth - (BOARD_WIDTH * scale)) / 2;
+    let yOffset: number = ((window.innerHeight - HEADER_HEIGHT) - (BOARD_HEIGHT * scale)) / 2;
+    $("#score").text("Score: " + gameState.getScore());
+    $("#lives").text("Lives: " + gameState.getLives());
     $('#paddle').css({ "left": (paddle.getLeftX() * scale) + xOffset,
                        "bottom": (paddle.getBottomY() * scale) + yOffset,
                        "height": paddle.getHeight() * scale,

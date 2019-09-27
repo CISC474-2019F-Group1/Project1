@@ -3,34 +3,36 @@ body{
     height: 100vh;
     overflow-x: hidden;
     overflow-y: hidden;
+    padding-top: 0px;
+    margin-top: 0px;
     background-image: url("images/background.png");
 }
 
 #score{
-    margin: 5px;
-    position: absolute;
-    left: 10px;
-    top: 10px;
     text-decoration: underline;
     color: #ffffff; 
+    font-size: 30px;
+    margin-left: 10px;
 }
 
-#hints{
-    margin: 5px;
-    display: flex;  
-    align-items: center;
-    justify-content: center;
+#hints{    
+    font-size: 20px;
     font-style: italic;
     color: #ffffff; 
 }
 
 #lives{
-    margin: 5px;
-    position: absolute;
-    right: 10px;
-    top: 10px;
     text-decoration: underline;
     color: #ffffff; 
+    font-size: 30px;
+    margin-right: 10px;
+}
+
+#header-bar {
+    display: flex; 
+    justify-content: space-between;
+    height: 50px;
+    align-items: center;
 }
 
 #paddle{
