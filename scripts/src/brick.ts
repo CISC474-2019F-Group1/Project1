@@ -6,6 +6,7 @@ class Brick extends Rectangle {
     endY: number;
     speedX: number;
     speedY: number;
+    powerup: Powerup;
     
     constructor(x: number, 
                 y: number, 
@@ -13,7 +14,8 @@ class Brick extends Rectangle {
                 height: number, 
                 strength: number,
                 endX: number,
-                endY: number) {
+                endY: number,
+                p: Powerup) {
         super(x, y, width, height);
         this.strength = strength;
         this.initX = x;
@@ -22,10 +24,14 @@ class Brick extends Rectangle {
         this.endY = endY;
         this.speedX = 1;
         this.speedY = 1;
+        this.powerup = p;
     }
     
     decrementStrength() {
         this.strength -= 1;
+        if((this.strength == 0) && (this.powerup != null)){
+            this.powerup.place(this.x,this.y);
+        }
     }
     
     getStrength() {

@@ -54,7 +54,12 @@ for (let j: number = 0; j < 10; j++) {
     for (let i: number = 0; i < 10; i++) {
         let x: number = (i * BRICK_WIDTH) + (BRICK_WIDTH / 2);
         let y: number = BOARD_HEIGHT - (j * BRICK_HEIGHT) - (BRICK_HEIGHT / 2);
-        bricks.push(new Brick(x, y, BRICK_WIDTH, BRICK_HEIGHT, 3, x + 100, y + 100));
+        let rand: number = Math.floor(Math.random() * 15);
+        if(rand > 3){
+            rand = 0;
+        }
+        let p = new Powerup(rand, 15);
+        bricks.push(new Brick(x, y, BRICK_WIDTH, BRICK_HEIGHT, 3, x + 100, y + 100, p));
     }
 }
 let bricksJSON = JSON.stringify(bricks);
@@ -94,6 +99,13 @@ function update(delta: number) {
         ball.moveAndCollide(bricks, board, paddle, delta);
         for (let i: number = 0; i < bricks.length; i++) {
             bricks[i].updateBrick();
+            if(bricks[i].strength == 0){
+                $('#powerup-container').append('<div id="powerup-' + i + '" class="powerup powerup-' + bricks[i].powerup.getPid() + '"></div>');
+                bricks[i].strength = -1;
+            }
+            if(bricks[i].strength < 0){
+                bricks[i].powerup.updatePowerup();
+            }
         }
     };
 }
@@ -113,12 +125,20 @@ function draw() {
                      "width": (ball.getRadius() * 2) * scale });
                      
     for (let i: number = 0; i < bricks.length; i++) {
+
         $('#brick-' + i)
             .css({ "left": (bricks[i].getLeftX() * scale) + xOffset,
                    "bottom": (bricks[i].getBottomY() * scale) + yOffset,
                    "width": bricks[i].getWidth() * scale,
                    "height": bricks[i].getHeight() * scale })
             .attr('class', 'brick strength-' + bricks[i].getStrength());
+
+        if(bricks[i].powerup.getState() === 'falling'){
+            $('#powerup-' + i)
+                .css({"left": (bricks[i].powerup.getX() * scale) + xOffset,
+                    "bottom": (bricks[i].powerup.getY() * scale) + yOffset });
+        }
+
     }
 }
 
