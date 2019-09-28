@@ -1,6 +1,5 @@
 let gameStart = false
 let gameMode = "";
-let levelEditorGridEnabled: boolean;
 
 let keysPressed: Set<string> = new Set();
 
@@ -27,7 +26,7 @@ $(document).keyup(function (event) {
         if (event.which == 32) {
             keysPressed.delete('space');
             if (gameMode == "LevelEditor") {
-                levelEditorGridEnabled = !levelEditorGridEnabled;
+                gridEnabled = !gridEnabled;
             }
         }
     }
@@ -118,9 +117,37 @@ function initNormalMode() {
     $('#level-editor-ghost-brick').hide();
 }
 
+let gridEnabled: boolean;
+let ghostBrick: Brick;
+
+function generateGhostBrick(screenX: number, screenY: number) {
+    // Calculate board scaling and offset
+    let scale = Math.min(window.innerWidth / BOARD_WIDTH, 
+                         (window.innerHeight - HEADER_HEIGHT) / BOARD_HEIGHT);
+    let xOffset = (window.innerWidth - (BOARD_WIDTH * scale)) / 2;
+    let yOffset = ((window.innerHeight - HEADER_HEIGHT) - (BOARD_HEIGHT * scale)) / 2;
+    // Back-transform screen coordinates to board coordinates
+    let brickX = (screenX - xOffset) / scale;
+    let brickY = BOARD_HEIGHT - ((screenY - yOffset - HEADER_HEIGHT) / scale);
+    // Snap to grid (if enabled)
+    const HALF_BRICK_WIDTH = BRICK_WIDTH / 2;
+    const HALF_BRICK_HEIGHT = BRICK_HEIGHT / 2;
+    if (gridEnabled) {
+        brickX = Math.round((brickX - HALF_BRICK_WIDTH) / BRICK_WIDTH) * BRICK_WIDTH + HALF_BRICK_WIDTH;
+        brickY = Math.round((brickY - HALF_BRICK_HEIGHT) / BRICK_HEIGHT) * BRICK_HEIGHT + HALF_BRICK_HEIGHT;
+    }
+    const BRICK_AREA_BOTTOM = BOARD_HEIGHT - BRICK_AREA_HEIGHT;
+    // Snap to edges
+    brickX = Math.min(BOARD_WIDTH - HALF_BRICK_WIDTH, Math.max(HALF_BRICK_WIDTH, brickX));
+    brickY = Math.min(BOARD_HEIGHT - HALF_BRICK_HEIGHT, Math.max(BRICK_AREA_BOTTOM + HALF_BRICK_HEIGHT, brickY));
+    // Create ghost brick
+    return new Brick(brickX, brickY, BRICK_WIDTH, BRICK_HEIGHT, 1); // TODO set strength from currently-selected strength
+}
+
 function initLevelEditorMode() {
     bricks = [];
-    levelEditorGridEnabled = true;
+    gridEnabled = true;
+    ghostBrick = new Brick(0, 0, BRICK_WIDTH, BRICK_HEIGHT, 0);
 
     $('#game-header-bar').hide();
     $('#level-editor-header-bar').show();
@@ -129,33 +156,15 @@ function initLevelEditorMode() {
     $('#brick-container').show();
     $('#game-container').show();
     $('#brick-container').css("background", "#3337");
+    $('#brick-container').on("mouseenter", function(event) {
+        ghostBrick = generateGhostBrick(event.pageX, event.pageY);
+        $('#level-editor-ghost-brick').show();
+    });
+    $('#brick-container').on("mouseout", function(event) {
+        $('#level-editor-ghost-brick').hide();
+    });
     $("#brick-container").on("mousemove", function(event) {
-        let scale = Math.min(window.innerWidth / BOARD_WIDTH, 
-                             (window.innerHeight - HEADER_HEIGHT) / BOARD_HEIGHT);
-        let xOffset = (window.innerWidth - (BOARD_WIDTH * scale)) / 2;
-        let yOffset = ((window.innerHeight - HEADER_HEIGHT) - (BOARD_HEIGHT * scale)) / 2;
-        let brickX = (event.pageX - xOffset) / scale;
-        let brickY = BOARD_HEIGHT - ((event.pageY - yOffset - HEADER_HEIGHT) / scale);
-        if (levelEditorGridEnabled) {
-            brickX = Math.round((brickX - BRICK_WIDTH / 2) / BRICK_WIDTH) * BRICK_WIDTH + BRICK_WIDTH / 2;
-            brickY = Math.round((brickY - BRICK_HEIGHT / 2) / BRICK_HEIGHT) * BRICK_HEIGHT + BRICK_HEIGHT / 2;
-        }
-        //console.log(brickX + " " + brickY);
-        if (brickX - BRICK_WIDTH / 2 >= 0 
-            && brickX + BRICK_WIDTH / 2 <= BOARD_WIDTH
-            && brickY - BRICK_HEIGHT / 2 >= BOARD_HEIGHT - BRICK_AREA_HEIGHT
-            && brickY + BRICK_HEIGHT / 2 <= BOARD_HEIGHT) {
-            let ghostBrick = new Brick(brickX, brickY, BRICK_WIDTH, BRICK_HEIGHT, 1); // TODO set strength from currently-selected strength
-            $('#level-editor-ghost-brick')
-                .css({ "left": (ghostBrick.getLeftX() * scale) + xOffset,
-                       "bottom": (ghostBrick.getBottomY() * scale) + yOffset,
-                       "width": ghostBrick.getWidth() * scale,
-                       "height": ghostBrick.getHeight() * scale })
-                .attr('class', 'brick strength-' + ghostBrick.getStrength())
-                .show();
-        } else {
-            $('#level-editor-ghost-brick').hide();
-        }
+        ghostBrick = generateGhostBrick(event.pageX, event.pageY);
     });
 }
 
@@ -200,24 +209,56 @@ function update(delta: number) {
     };
 }
 
-function draw() {
+function drawLevelEditor() {
+    let scale: number = Math.min(window.innerWidth / BOARD_WIDTH, 
+                                 (window.innerHeight - HEADER_HEIGHT) / BOARD_HEIGHT);
+    let xOffset: number = (window.innerWidth - (BOARD_WIDTH * scale)) / 2;
+    let yOffset: number = ((window.innerHeight - HEADER_HEIGHT) - (BOARD_HEIGHT * scale)) / 2;
+    
+    $('#game-container')
+        .css({ "left": xOffset,
+               "bottom": yOffset,
+               "width": BOARD_WIDTH * scale,
+               "height": BOARD_HEIGHT * scale });
+    $('#brick-container')
+        .css({ "left": xOffset,
+                "bottom": ((BOARD_HEIGHT - BRICK_AREA_HEIGHT) * scale) + yOffset,
+                "width": BOARD_WIDTH * scale,
+                "height": BRICK_AREA_HEIGHT * scale });
+                     
+    $('#level-editor-ghost-brick')
+        .css({ "left": (ghostBrick.getLeftX() * scale) + xOffset,
+               "bottom": (ghostBrick.getBottomY() * scale) + yOffset,
+               "width": ghostBrick.getWidth() * scale,
+               "height": ghostBrick.getHeight() * scale })
+        .attr('class', 'brick strength-' + ghostBrick.getStrength());
+                     
+    for (let i: number = 0; i < bricks.length; i++) {
+        $('#brick-' + i)
+            .css({ "left": (bricks[i].getLeftX() * scale) + xOffset,
+                   "bottom": (bricks[i].getBottomY() * scale) + yOffset,
+                   "width": bricks[i].getWidth() * scale,
+                   "height": bricks[i].getHeight() * scale })
+            .attr('class', 'brick strength-' + bricks[i].getStrength());
+    }
+}
+
+function drawGame() {
     if (gameStart) {
         let scale: number = Math.min(window.innerWidth / BOARD_WIDTH, 
                                      (window.innerHeight - HEADER_HEIGHT) / BOARD_HEIGHT);
         let xOffset: number = (window.innerWidth - (BOARD_WIDTH * scale)) / 2;
         let yOffset: number = ((window.innerHeight - HEADER_HEIGHT) - (BOARD_HEIGHT * scale)) / 2;
-        if (gameMode != "LevelEditor") {
-            $("#score").text("Score: " + gameState.getScore());
-            $("#lives").text("Lives: " + gameState.getLives());
-            $('#paddle').css({ "left": (paddle.getLeftX() * scale) + xOffset,
-                               "bottom": (paddle.getBottomY() * scale) + yOffset,
-                               "height": paddle.getHeight() * scale,
-                               "width": paddle.getWidth() * scale });
-            $('#ball').css({ "left": ((ball.getX() - ball.getRadius()) * scale) + xOffset, 
-                             "bottom": ((ball.getY() - ball.getRadius()) * scale) + yOffset,
-                             "height": (ball.getRadius() * 2) * scale,
-                             "width": (ball.getRadius() * 2) * scale });
-        }
+        $("#score").text("Score: " + gameState.getScore());
+        $("#lives").text("Lives: " + gameState.getLives());
+        $('#paddle').css({ "left": (paddle.getLeftX() * scale) + xOffset,
+                           "bottom": (paddle.getBottomY() * scale) + yOffset,
+                           "height": paddle.getHeight() * scale,
+                           "width": paddle.getWidth() * scale });
+        $('#ball').css({ "left": ((ball.getX() - ball.getRadius()) * scale) + xOffset, 
+                         "bottom": ((ball.getY() - ball.getRadius()) * scale) + yOffset,
+                         "height": (ball.getRadius() * 2) * scale,
+                         "width": (ball.getRadius() * 2) * scale });
         $('#game-container').css({ "left": xOffset,
                                    "bottom": yOffset,
                                    "width": BOARD_WIDTH * scale,
@@ -235,6 +276,14 @@ function draw() {
                        "height": bricks[i].getHeight() * scale })
                 .attr('class', 'brick strength-' + bricks[i].getStrength());
         }
+    }
+}
+
+function draw() {
+    if (gameMode == "LevelEditor") {
+        drawLevelEditor();
+    } else {
+        drawGame();
     }
 }
 
