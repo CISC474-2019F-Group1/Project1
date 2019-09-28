@@ -64,7 +64,6 @@ body{
 
 #level-editor-ghost-brick {
     opacity: 0.5;
-    pointer-events:none
 }
 
 .brick{
@@ -73,6 +72,7 @@ body{
     padding: 0px;
     box-sizing: border-box;
     border: 1px outset #ffffff;
+    pointer-events:none;
 }
 
 .strength-0{

@@ -82,7 +82,8 @@ let gameState: GameState;
 let board: Board;
 let paddle: Paddle;
 let ball: Ball;
-let bricks: Brick[];
+let brickSeq: number;
+let bricks: Map<number, Brick>;
 
 function initNormalMode() {
     powerUp = new PowerUp("None");
@@ -90,19 +91,21 @@ function initNormalMode() {
     board = new Board(0, BOARD_WIDTH, BOARD_HEIGHT, 0);
     paddle = new Paddle(BOARD_WIDTH / 2, 10, 200, 20, 5, board.getRightEdgeX());
     ball = new Ball(BOARD_WIDTH / 2, 100, 0, 0, 10);
-    bricks = [];
+    brickSeq = 0;
+    bricks = new Map();
     for (let j: number = 0; j < 10; j++) {
         for (let i: number = 0; i < 10; i++) {
             let x: number = (i * BRICK_WIDTH) + (BRICK_WIDTH / 2);
             let y: number = BOARD_HEIGHT - (j * BRICK_HEIGHT) - (BRICK_HEIGHT / 2);
-            bricks.push(new Brick(x, y, BRICK_WIDTH, BRICK_HEIGHT, 3));
+            bricks.set(brickSeq, new Brick(x, y, BRICK_WIDTH, BRICK_HEIGHT, 3));
+            brickSeq++;
         }
     }
-    let bricksJSON = JSON.stringify(bricks);
+    let bricksJSON = JSON.stringify(Array.from(bricks.values()));
     console.log(bricksJSON);
     console.log(<Brick[]> JSON.parse(bricksJSON));
     $('#brick-container').empty();
-    for (let i: number = 0; i < bricks.length; i++) {
+    for (const [i, brick] of bricks) {
         $('#brick-container').append('<div id="brick-' + i + '"></div>');
     }
     
@@ -144,8 +147,24 @@ function generateGhostBrick(screenX: number, screenY: number) {
     return new Brick(brickX, brickY, BRICK_WIDTH, BRICK_HEIGHT, 1); // TODO set strength from currently-selected strength
 }
 
+function getBrickIdAt(x: number, y: number) {
+    // Note: Iterate backwards to prevent counterintuitive selection of rearmost 
+    // brick when multiple bricks overlap. Frontmost brick should be selected 
+    // instead.
+    for (const [i, brick] of Array.from(bricks).reverse()) {
+        if (x >= brick.getLeftX()
+            && x <= brick.getRightX()
+            && y >= brick.getBottomY()
+            && y <= brick.getTopY()) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 function initLevelEditorMode() {
-    bricks = [];
+    brickSeq = 0;
+    bricks = new Map();
     gridEnabled = true;
     ghostBrick = new Brick(0, 0, BRICK_WIDTH, BRICK_HEIGHT, 0);
 
@@ -165,6 +184,17 @@ function initLevelEditorMode() {
     });
     $("#brick-container").on("mousemove", function(event) {
         ghostBrick = generateGhostBrick(event.pageX, event.pageY);
+    });
+    $("#brick-container").on("click", function(event) {
+        let brickId = getBrickIdAt(ghostBrick.getX(), ghostBrick.getY());
+        if (brickId < 0) {
+            bricks.set(brickSeq, ghostBrick.clone());
+            $('#brick-container').append('<div id="brick-' + brickSeq + '"></div>');
+            brickSeq++;
+        } else {
+            bricks.delete(brickId);
+            $('#brick-' + brickId).remove();
+        }
     });
 }
 
@@ -232,14 +262,14 @@ function drawLevelEditor() {
                "width": ghostBrick.getWidth() * scale,
                "height": ghostBrick.getHeight() * scale })
         .attr('class', 'brick strength-' + ghostBrick.getStrength());
-                     
-    for (let i: number = 0; i < bricks.length; i++) {
+    
+    for (const [i, brick] of bricks) {
         $('#brick-' + i)
-            .css({ "left": (bricks[i].getLeftX() * scale) + xOffset,
-                   "bottom": (bricks[i].getBottomY() * scale) + yOffset,
-                   "width": bricks[i].getWidth() * scale,
-                   "height": bricks[i].getHeight() * scale })
-            .attr('class', 'brick strength-' + bricks[i].getStrength());
+            .css({ "left": (brick.getLeftX() * scale) + xOffset,
+                   "bottom": (brick.getBottomY() * scale) + yOffset,
+                   "width": brick.getWidth() * scale,
+                   "height": brick.getHeight() * scale })
+            .attr('class', 'brick strength-' + brick.getStrength());
     }
 }
 
@@ -267,14 +297,14 @@ function drawGame() {
                                     "bottom": ((BOARD_HEIGHT - BRICK_AREA_HEIGHT) * scale) + yOffset,
                                     "width": BOARD_WIDTH * scale,
                                     "height": BRICK_AREA_HEIGHT * scale });
-                         
-        for (let i: number = 0; i < bricks.length; i++) {
+        
+        for (const [i, brick] of bricks) {
             $('#brick-' + i)
-                .css({ "left": (bricks[i].getLeftX() * scale) + xOffset,
-                       "bottom": (bricks[i].getBottomY() * scale) + yOffset,
-                       "width": bricks[i].getWidth() * scale,
-                       "height": bricks[i].getHeight() * scale })
-                .attr('class', 'brick strength-' + bricks[i].getStrength());
+                .css({ "left": (brick.getLeftX() * scale) + xOffset,
+                       "bottom": (brick.getBottomY() * scale) + yOffset,
+                       "width": brick.getWidth() * scale,
+                       "height": brick.getHeight() * scale })
+                .attr('class', 'brick strength-' + brick.getStrength());
         }
     }
 }

@@ -18,4 +18,13 @@ class Brick extends Rectangle {
         return this.strength;
     }
     
+    clone() {
+        return new Brick(
+            super.getX(), 
+            super.getY(), 
+            super.getWidth(), 
+            super.getHeight(), 
+            this.getStrength());
+    }
+    
 }
