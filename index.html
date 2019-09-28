@@ -19,14 +19,44 @@
 </head>
 
 <body>
-  <div id="header-bar">
-    <span id="score">___</span>
-    <span id="hints">___</span>
-    <span id="lives">___</span>
+  <div id="game-header-bar" class="header-bar">
+    <span id="score" class="header-bar-left"></span>
+    <span id="hints" class="header-bar-hint"></span>
+    <span id="lives" class="header-bar-right"></span>
   </div>
-  <div id="paddle"></div>
-  <div id="ball"></div>
-  <div id="brick-container"></div>
+  <div id="level-editor-header-bar" class="header-bar">
+    <div id="level-editor-brick-strength" class="header-bar-left dropdown">
+      <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Brick Strength
+      <span class="caret"></span></button>
+      <ul class="dropdown-menu">
+        <li><a href="#">1</a></li>
+        <li><a href="#">2</a></li>
+        <li><a href="#">3</a></li>
+        <li><a href="#">4</a></li>
+        <li><a href="#">5</a></li>
+        <li><a href="#">X</a></li>
+      </ul>
+    </div> 
+    <span id="level-editor-hint" class="header-bar-hint">Click to place/remove bricks. Ctrl+click to place/remove powerups. Shift+click and drag for moving bricks. Space toggles grid.</span>
+    <div id="level-editor-powerup-type" class="header-bar-right dropdown">
+      <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Powerup Type
+      <span class="caret"></span></button>
+      <ul class="dropdown-menu">
+        <li><a href="#">Long paddle</a></li>
+        <li><a href="#">Instant break</a></li>
+        <li><a href="#">Force field</a></li>
+        <li><a href="#">Fast paddle</a></li>
+        <li><a href="#">Lasers</a></li>
+        <li><a href="#">Double score</a></li>
+      </ul>
+    </div> 
+  </div>
+  <div id="game-container">
+    <div id="paddle"></div>
+    <div id="ball"></div>
+    <div id="brick-container"></div>
+  </div>
+  <div id="level-editor-ghost-brick" class="brick"></div>
 
   <!-- Opening screen modal-->
   <div id="chooseGame" class="modal" tabindex="-1" role="dialog">
