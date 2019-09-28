@@ -123,7 +123,7 @@ function initNormalMode() {
 let gridEnabled: boolean;
 let ghostBrick: Brick;
 
-function generateGhostBrick(screenX: number, screenY: number) {
+function placeGhostBrick(screenX: number, screenY: number, ghostBrick: Brick) {
     // Calculate board scaling and offset
     let scale = Math.min(window.innerWidth / BOARD_WIDTH, 
                          (window.innerHeight - HEADER_HEIGHT) / BOARD_HEIGHT);
@@ -143,8 +143,9 @@ function generateGhostBrick(screenX: number, screenY: number) {
     // Snap to edges
     brickX = Math.min(BOARD_WIDTH - HALF_BRICK_WIDTH, Math.max(HALF_BRICK_WIDTH, brickX));
     brickY = Math.min(BOARD_HEIGHT - HALF_BRICK_HEIGHT, Math.max(BRICK_AREA_BOTTOM + HALF_BRICK_HEIGHT, brickY));
-    // Create ghost brick
-    return new Brick(brickX, brickY, BRICK_WIDTH, BRICK_HEIGHT, 1); // TODO set strength from currently-selected strength
+    // Place ghost brick at calculated virtual x and y
+    ghostBrick.setX(brickX);
+    ghostBrick.setY(brickY);
 }
 
 function getBrickIdAt(x: number, y: number) {
@@ -166,7 +167,7 @@ function initLevelEditorMode() {
     brickSeq = 0;
     bricks = new Map();
     gridEnabled = true;
-    ghostBrick = new Brick(0, 0, BRICK_WIDTH, BRICK_HEIGHT, 0);
+    ghostBrick = new Brick(0, 0, BRICK_WIDTH, BRICK_HEIGHT, 3);
 
     $('#game-header-bar').hide();
     $('#level-editor-header-bar').show();
@@ -176,14 +177,14 @@ function initLevelEditorMode() {
     $('#game-container').show();
     $('#brick-container').css("background", "#3337");
     $('#brick-container').on("mouseenter", function(event) {
-        ghostBrick = generateGhostBrick(event.pageX, event.pageY);
+        placeGhostBrick(event.pageX, event.pageY, ghostBrick);
         $('#level-editor-ghost-brick').show();
     });
     $('#brick-container').on("mouseout", function(event) {
         $('#level-editor-ghost-brick').hide();
     });
     $("#brick-container").on("mousemove", function(event) {
-        ghostBrick = generateGhostBrick(event.pageX, event.pageY);
+        placeGhostBrick(event.pageX, event.pageY, ghostBrick);
     });
     $("#brick-container").on("click", function(event) {
         let brickId = getBrickIdAt(ghostBrick.getX(), ghostBrick.getY());
@@ -195,6 +196,9 @@ function initLevelEditorMode() {
             bricks.delete(brickId);
             $('#brick-' + brickId).remove();
         }
+    });
+    $("#level-editor-brick-strength ul li a").on("click", function(event) {
+        ghostBrick.setStrength(parseInt(event.target.innerText));
     });
 }
 

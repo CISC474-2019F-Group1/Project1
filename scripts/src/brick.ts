@@ -18,6 +18,10 @@ class Brick extends Rectangle {
         return this.strength;
     }
     
+    setStrength(strength: number) {
+        this.strength = strength;
+    }
+    
     clone() {
         return new Brick(
             super.getX(), 
