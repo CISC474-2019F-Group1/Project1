@@ -1,37 +1,6 @@
 let gameStart = false
 let gameMode = "";
 
-let keysPressed: Set<string> = new Set();
-
-$(document).keydown(function (event) {
-    if (gameStart) {
-        if (event.which == 37) {
-            keysPressed.add('left');
-        } else if (event.which == 39) {
-            keysPressed.add('right');
-        } else if (event.which == 32) {
-            keysPressed.add('space');
-        }
-    }
-});
-
-$(document).keyup(function (event) {
-    if (gameStart) {
-        if (event.which == 37) {
-            keysPressed.delete('left');
-        }
-        if (event.which == 39) {
-            keysPressed.delete('right');
-        } 
-        if (event.which == 32) {
-            keysPressed.delete('space');
-            if (gameMode == "LevelEditor") {
-                gridEnabled = !gridEnabled;
-            }
-        }
-    }
-});
-
 $(document).ready(function () {
     $('#game-header-bar').hide();
     $('#level-editor-header-bar').hide();
@@ -68,6 +37,10 @@ $(document).ready(function () {
     console.log('Game Mode: ' + gameStart);
 });
 
+$("input[type='text']").on("keydown", function(event) {
+    event.stopPropagation();
+});
+
 const HEADER_HEIGHT = 50;
 const PADDLE_AREA_HEIGHT = 250;
 const BRICK_AREA_HEIGHT = 500;
@@ -77,6 +50,8 @@ const BOARD_WIDTH = 1000;
 const BRICK_WIDTH = BOARD_WIDTH / 10;
 const BRICK_HEIGHT = BRICK_WIDTH / 2;
 
+let keysPressed: Set<string> = new Set();
+
 let powerUp: PowerUp;
 let gameState: GameState;
 let board: Board;
@@ -85,14 +60,19 @@ let ball: Ball;
 let brickSeq: number;
 let bricks: Map<number, Brick>;
 
+function clearBoard() {
+    brickSeq = 0;
+    bricks = new Map();
+    $('#brick-container').empty();
+}
+
 function initNormalMode() {
     powerUp = new PowerUp("None");
     gameState = new GameState(0, 3, 0, powerUp, gameMode);
     board = new Board(0, BOARD_WIDTH, BOARD_HEIGHT, 0);
     paddle = new Paddle(BOARD_WIDTH / 2, 10, 200, 20, 5, board.getRightEdgeX());
     ball = new Ball(BOARD_WIDTH / 2, 100, 0, 0, 10);
-    brickSeq = 0;
-    bricks = new Map();
+    clearBoard();
     for (let j: number = 0; j < 10; j++) {
         for (let i: number = 0; i < 10; i++) {
             let x: number = (i * BRICK_WIDTH) + (BRICK_WIDTH / 2);
@@ -101,13 +81,34 @@ function initNormalMode() {
             brickSeq++;
         }
     }
-    let bricksJSON = JSON.stringify(Array.from(bricks.values()));
-    console.log(bricksJSON);
-    console.log(<Brick[]> JSON.parse(bricksJSON));
-    $('#brick-container').empty();
     for (const [i, brick] of bricks) {
         $('#brick-container').append('<div id="brick-' + i + '"></div>');
     }
+    
+    $(document).off("keydown");
+    $(document).off("keyup");
+    $(document).on("keydown", function (event) {
+        if (gameStart) {
+            if (event.key == 'ArrowLeft') {
+                keysPressed.add('left');
+            } else if (event.key == 'ArrowRight') {
+                keysPressed.add('right');
+            } else if (event.key == ' ') {
+                keysPressed.add('space');
+            }
+        }
+    });
+    $(document).on("keyup", function (event) {
+        if (gameStart) {
+            if (event.key == 'ArrowLeft') {
+                keysPressed.delete('left');
+            } else if (event.key == 'ArrowRight') {
+                keysPressed.delete('right');
+            } else if (event.key == ' ') {
+                keysPressed.delete('space');
+            } 
+        }
+    });
     
     $('#game-header-bar').show();
     $('#level-editor-header-bar').hide();
@@ -164,10 +165,47 @@ function getBrickIdAt(x: number, y: number) {
 }
 
 function initLevelEditorMode() {
-    brickSeq = 0;
-    bricks = new Map();
     gridEnabled = true;
     ghostBrick = new Brick(0, 0, BRICK_WIDTH, BRICK_HEIGHT, 3);
+    clearBoard();
+
+    $(document).off("keydown");
+    $(document).off("keyup");
+    $(document).on("keydown", function (event) {
+        if (event.key == ' ') {
+            gridEnabled = !gridEnabled;
+        } else if (event.key.toLowerCase() == 'o') {
+            $(".modal").modal('hide');
+            $('#level-editor-open-modal').modal({ backdrop: 'static', keyboard: false });
+            $('#level-editor-open-name').val('');
+            $("#level-editor-open-name-group").removeClass("has-error");
+            $("#level-editor-open-list").empty();
+            for (var i = 0; i < localStorage.length; i++){
+                let levelName = localStorage.key(i);
+                console.log(levelName);
+                $("#level-editor-open-list").append(
+                    '<button type="button" class="list-group-item list-group-item-action">' 
+                    + levelName 
+                    + '</button>');
+            }
+            $("#level-editor-open-list button").on("click", function(event) {
+                $('#level-editor-open-name').val(event.target.innerHTML);
+            });
+        } else if (event.key.toLowerCase() == 's') {
+            $(".modal").modal('hide');
+            $('#level-editor-save-modal').modal({ backdrop: 'static', keyboard: false });
+            $('#level-editor-save-name').val('');
+        } else if (event.key.toLowerCase() == 'n') {
+            clearBoard();
+        } else if (event.key.toLowerCase() == 'h') {
+            if ($('#level-editor-help-modal').is(':visible')) {
+                $(".modal").modal('hide');
+            } else {
+                $(".modal").modal('hide');
+                $('#level-editor-help-modal').modal({ backdrop: 'static', keyboard: false });
+            }
+        }
+    });
 
     $('#game-header-bar').hide();
     $('#level-editor-header-bar').show();
@@ -199,6 +237,46 @@ function initLevelEditorMode() {
     });
     $("#level-editor-brick-strength ul li a").on("click", function(event) {
         ghostBrick.setStrength(parseInt(event.target.innerText));
+    });
+    $("#level-editor-save-confirm").on("click", function(event) {
+        if (typeof(Storage) !== "undefined") {
+            let bricksJSON = JSON.stringify(Array.from(bricks.values()));
+            let levelName = String($("#level-editor-save-name").val());
+            localStorage.setItem(levelName, bricksJSON);
+        } else {
+            console.log("Error: Web Storage API is not supported");
+        }
+    });
+    $("#level-editor-open-confirm").on("click", function(event) {
+        if (typeof(Storage) !== "undefined") {
+            let levelName = String($("#level-editor-open-name").val());
+            let bricksJSON = localStorage.getItem(levelName);
+            if (bricksJSON == null) {
+                $("#level-editor-open-name-group").addClass("has-error");
+                console.log("Warning: Requested level does not exist");
+                return false;
+            } else {
+                let bricksArray = <any[]> JSON.parse(bricksJSON);
+                clearBoard();
+                for (let brick of bricksArray) {
+                    bricks.set(brickSeq, new Brick(brick.x, brick.y, brick.width, brick.height, brick.strength));
+                    $('#brick-container').append('<div id="brick-' + brickSeq + '"></div>');
+                    brickSeq++;
+                }
+            }
+        } else {
+            console.log("Error: Web Storage API is not supported");
+        }
+    });
+    $("#level-editor-open-name").on("input", function(event) {
+        let levelNamePrefix = String($("#level-editor-open-name").val());
+        $("#level-editor-open-list button").each(function(i, button) {
+            if (button.innerHTML.startsWith(levelNamePrefix)) {
+                $(button).show();
+            } else {
+                $(button).hide();
+            }
+        });
     });
 }
 

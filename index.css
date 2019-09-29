@@ -6,6 +6,12 @@ body{
     background-image: url("images/background.png");
 }
 
+#level-editor-open-list {
+    margin-top: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
 .header-bar-left{
     text-decoration: underline;
     color: #ffffff; 
