@@ -38,6 +38,34 @@ class Brick extends Rectangle {
         return this.strength;
     }
 
+    getInitX(){
+        return this.initX;
+    }
+
+    getInitY(){
+        return this.initY;
+    }
+
+    getEndX(){
+        return this.endX;
+    }
+
+    getEndY(){
+        return this.endY;
+    }
+
+    getSpeedX(){
+        return this.speedX;
+    }
+
+    getSpeedY(){
+        return this.speedY;
+    }
+
+    getPowerup(){
+        return this.powerup;
+    }
+
     updateBrick() {
 
         if(this.speedX > 0){
@@ -88,7 +116,10 @@ class Brick extends Rectangle {
             super.getY(), 
             super.getWidth(), 
             super.getHeight(), 
-            this.getStrength());
+            this.getStrength(),
+            this.getEndX(),
+            this.getEndY(),
+            this.getPowerup());
     }
     
 }
