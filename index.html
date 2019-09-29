@@ -19,14 +19,41 @@
 </head>
 
 <body>
-  <div>
-    <h1 id="score">___</h1>
-    <h3 id="hints">___</h3>
-    <h1 id="lives">___</h1>
+  <div id="game-header-bar" class="header-bar">
+    <span id="score" class="header-bar-left"></span>
+    <span id="hints" class="header-bar-hint"></span>
+    <span id="lives" class="header-bar-right"></span>
   </div>
-  <div id="paddle"></div>
-  <div id="ball"></div>
-  <div id="brick-container"></div>
+  <div id="level-editor-header-bar" class="header-bar">
+    <div id="level-editor-brick-strength" class="header-bar-left dropdown">
+      <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Brick Strength
+      <span class="caret"></span></button>
+      <ul class="dropdown-menu">
+        <li><a href="#">1</a></li>
+        <li><a href="#">2</a></li>
+        <li><a href="#">3</a></li>
+      </ul>
+    </div> 
+    <span id="level-editor-hint" class="header-bar-hint">Press h to toggle help</span>
+    <div id="level-editor-powerup-type" class="header-bar-right dropdown">
+      <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Powerup Type
+      <span class="caret"></span></button>
+      <ul class="dropdown-menu">
+        <li><a href="#">Long paddle</a></li>
+        <li><a href="#">Instant break</a></li>
+        <li><a href="#">Force field</a></li>
+        <li><a href="#">Fast paddle</a></li>
+        <li><a href="#">Lasers</a></li>
+        <li><a href="#">Double score</a></li>
+      </ul>
+    </div> 
+  </div>
+  <div id="game-container">
+    <div id="paddle"></div>
+    <div id="ball"></div>
+    <div id="brick-container"></div>
+  </div>
+  <div id="level-editor-ghost-brick" class="brick"></div>
 
   <!-- Opening screen modal-->
   <div id="chooseGame" class="modal" tabindex="-1" role="dialog">
@@ -36,27 +63,115 @@
           <h5 class="modal-title">Welcome to Smitty's Bricks</h5>
         </div>
         <div class="modal-body">
-          <p>Modal body text goes here.</p>
-          <div class="row">
-            <div class="col-lg-4">
-              <button type="button" id='normalMode' class="btn btn-lg btn-default" data-dismiss="modal"
-                data-keyboard="true">Normal Mode</button>
-            </div>
-            <div class="col-lg-4">
-              <button type="button" id='zenMode' class="btn btn-lg btn-default" data-dismiss="modal"
-                data-keyboard="true">Zen Mode</button>
-            </div>
-            <div class="col-lg-4">
-              <button type="button" id='hardCore' class="btn btn-lg btn-default" data-dismiss="modal"
-                data-keyboard="true">Hardcore Mode</button>
-            </div>
-            <div class="col-lg-4">
-              <button type="button" id='aiLab' class="btn btn-lg btn-default" data-dismiss="modal"
-                data-keyboard="true">AI LAB</button>
-            </div>
+          <p>Select a game mode:</p>
+          <div class="list-group">
+            <button type="button" class="list-group-item list-group-item-action" 
+              data-dismiss="modal" id="normalMode">Normal Mode</button>
+            <button type="button" class="list-group-item list-group-item-action" 
+              data-dismiss="modal" id="zenMode">Zen Mode</button>
+            <button type="button" class="list-group-item list-group-item-action" 
+              data-dismiss="modal" id="hardCore">Hardcore Mode</button>
+            <button type="button" class="list-group-item list-group-item-action" 
+              data-dismiss="modal" id="aiLab">AI Lab</button>
+            <button type="button" class="list-group-item list-group-item-action" 
+              data-dismiss="modal" id="levelEditor">Level Editor</button>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal for loading from local storage -->
+  <div id="level-editor-open-modal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Open from Local Storage</h5>
+        </div>
+        <div class="modal-body">
+          <p>Select the level to open:</p>
+          <div class="form-group" id="level-editor-open-name-group">
+            <input type="text" class="form-control" id="level-editor-open-name" placeholder="Level name">
+          </div>
+          <div id="level-editor-open-list" class="list-group overflow-auto"></div>
+        </div>
         <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal" id='level-editor-open-confirm'>Open</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal for saving to local storage -->
+  <div id="level-editor-save-modal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Save to Local Storage</h5>
+        </div>
+        <div class="modal-body">
+          <p>Choose a name for the level:</p>
+          <input type="text" class="form-control" id="level-editor-save-name" placeholder="Level name">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal" id='level-editor-save-confirm'>Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal for level editor help display -->
+  <div id="level-editor-help-modal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Controls Help</h5>
+        </div>
+        <div class="modal-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Button</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>left click</td>
+                <td>Place/remove brick</td>
+              </tr>
+              <tr>
+                <td>ctrl + left click</td>
+                <td>Place/remove power-up</td>
+              </tr>
+              <tr>
+                <td>shift + left click + drag</td>
+                <td>Place moving brick</td>
+              </tr>
+              <tr>
+                <td>space</td>
+                <td>Toggle snap to grid</td>
+              </tr>
+              <tr>
+                <td>s</td>
+                <td>Save level to local storage</td>
+              </tr>
+              <tr>
+                <td>o</td>
+                <td>Open level from local storage</td>
+              </tr>
+              <tr>
+                <td>n</td>
+                <td>New level (clear board)</td>
+              </tr>
+              <tr>
+                <td>h</td>
+                <td>Toggle help display</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
