@@ -37,7 +37,7 @@ class Ball {
         return this.radius;
     }
     
-    moveAndCollide(gameState: GameState, bricks: Brick[], board: Board, paddle: Paddle, delta: number) {
+    moveAndCollide(gameState: GameState, bricks: Map<number, Brick>, board: Board, paddle: Paddle, delta: number) {
         let prevX: number = this.x;
         let prevY: number = this.y;
         
@@ -46,11 +46,11 @@ class Ball {
         this.y += this.vy * delta;
         
         // Collide bricks
-        for (let i: number = 0; i < bricks.length; i++) {
-            if (bricks[i].getStrength() < 1) {
+        for (let [i, brick] of bricks) {
+            if (brick.getStrength() < 1) {
                 continue;
             }
-            let c: any = this.checkCollideRect(bricks[i]);
+            let c: any = this.checkCollideRect(brick);
             if (c.hit) {
                 // Move back to position before collision
                 this.x = prevX;
@@ -66,10 +66,10 @@ class Ball {
                 }
                 
                 // Lower strength of brick
-                bricks[i].decrementStrength();
-                if (bricks[i].getStrength() < 1) { 
+                brick.decrementStrength();
+                if (brick.getStrength() < 1) { 
                     gameState.incrementScoreBy(5);
-                } else if (bricks[i].getStrength() == 1) {
+                } else if (brick.getStrength() == 1) {
                     gameState.incrementScoreBy(2);
                 } else {
                     gameState.incrementScoreBy(1);

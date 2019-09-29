@@ -6,35 +6,46 @@ body{
     background-image: url("images/background.png");
 }
 
-#score{
-    margin: 5px;
-    position: absolute;
-    left: 10px;
-    top: 10px;
-    text-decoration: underline;
-    color: #ffffff; 
+#level-editor-open-list {
+    margin-top: 10px;
+    max-height: 300px;
+    overflow-y: auto;
 }
 
-#hints{
-    margin: 5px;
-    display: flex;  
-    align-items: center;
-    justify-content: center;
+.header-bar-left{
+    text-decoration: underline;
+    color: #ffffff; 
+    font-size: 30px;
+    margin-left: 10px;
+}
+
+.header-bar-hint{    
+    font-size: 20px;
     font-style: italic;
     color: #ffffff; 
+    margin-left: 10px;
+    margin-right: 10px;
+    text-align: center;
 }
 
-#lives{
-    margin: 5px;
-    position: absolute;
-    right: 10px;
-    top: 10px;
+.header-bar-right{
     text-decoration: underline;
     color: #ffffff; 
+    font-size: 30px;
+    margin-right: 10px;
+}
+
+.header-bar {
+    position: absolute;
+    display: flex; 
+    justify-content: space-between;
+    height: 50px;
+    width: 100%;
+    align-items: center;
 }
 
 #paddle{
-    position: absolute;
+    position: fixed;
     border-radius: 25px;
     background-color: #ffffff;
     margin: 0px;
@@ -43,17 +54,31 @@ body{
 
 #ball{
     border-radius: 50%;
-    position: absolute;
+    position: fixed;
     background-color: #ffffff;
     margin: 0px;
     padding: 0px;
 }
 
+#game-container{
+    position: fixed;
+}
+
+#brick-container{
+    position: fixed;
+}
+
+#level-editor-ghost-brick {
+    opacity: 0.5;
+}
+
 .brick{
-    position: absolute;
+    position: fixed;
     margin: 0px;
     padding: 0px;
     box-sizing: border-box;
+    border: 1px outset #ffffff;
+    pointer-events:none;
 }
 
 .strength-0{
