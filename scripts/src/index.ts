@@ -299,8 +299,6 @@ let delta: number = 0;
 let timestep: number = 1000 / 120;
 
 function update(delta: number) {
-    // Comment this line if you play by yourself
-    //computer(b1.positionX, pad.position);
     if (gameStart && gameMode != "LevelEditor") {
         if(gameMode == 'AILAB'){
             console.log('ai running');
