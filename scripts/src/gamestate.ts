@@ -2,13 +2,13 @@ class GameState {
     score: number;
     lives: number;
     level: number;
-    activePowerUp: PowerUp;
+    activePowerUp: Powerup;
     gameMode: string;
     
     constructor(score: number,
                 lives: number,
                 level: number,
-                activePowerUp: PowerUp,
+                activePowerUp: Powerup,
                 gameMode: string) {
         this.score = score;
         this.activePowerUp = activePowerUp;

@@ -87,12 +87,42 @@ body{
 
 .strength-1{
     background-color: #F00;
+    border: 1px outset #FFF;
 }
 
 .strength-2{
     background-color: #FF0;
+    border: 1px outset #FFF;
 }
 
 .strength-3{
     background-color: #0F0;
+    border: 1px outset #FFF;
+}
+
+.powerup{
+
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    position: absolute;
+
+}
+
+.powerup-1{
+
+    background-color: #F0F;
+
+}
+
+.powerup-2{
+
+    background-color: #00F;
+
+}
+
+.powerup-3{
+
+    background-color: #0FF;
+
 }

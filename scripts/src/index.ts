@@ -52,7 +52,7 @@ const BRICK_HEIGHT = BRICK_WIDTH / 2;
 
 let keysPressed: Set<string> = new Set();
 
-let powerUp: PowerUp;
+let powerUp: Powerup;
 let gameState: GameState;
 let board: Board;
 let paddle: Paddle;
@@ -67,7 +67,7 @@ function clearBoard() {
 }
 
 function initNormalMode() {
-    powerUp = new PowerUp("None");
+    powerUp = new Powerup(0,0);
     gameState = new GameState(0, 3, 0, powerUp, gameMode);
     board = new Board(0, BOARD_WIDTH, BOARD_HEIGHT, 0);
     paddle = new Paddle(BOARD_WIDTH / 2, 10, 200, 20, 5, board.getRightEdgeX());
@@ -77,7 +77,7 @@ function initNormalMode() {
         for (let i: number = 0; i < 10; i++) {
             let x: number = (i * BRICK_WIDTH) + (BRICK_WIDTH / 2);
             let y: number = BOARD_HEIGHT - (j * BRICK_HEIGHT) - (BRICK_HEIGHT / 2);
-            bricks.set(brickSeq, new Brick(x, y, BRICK_WIDTH, BRICK_HEIGHT, 3));
+            bricks.set(brickSeq, new Brick(x, y, BRICK_WIDTH, BRICK_HEIGHT, 3, x, y, powerUp));
             brickSeq++;
         }
     }
@@ -166,7 +166,7 @@ function getBrickIdAt(x: number, y: number) {
 
 function initLevelEditorMode() {
     gridEnabled = true;
-    ghostBrick = new Brick(0, 0, BRICK_WIDTH, BRICK_HEIGHT, 3);
+    ghostBrick = new Brick(0, 0, BRICK_WIDTH, BRICK_HEIGHT, 3, 0, 0, new Powerup(0,0));
     clearBoard();
 
     $(document).off("keydown");
@@ -259,7 +259,7 @@ function initLevelEditorMode() {
                 let bricksArray = <any[]> JSON.parse(bricksJSON);
                 clearBoard();
                 for (let brick of bricksArray) {
-                    bricks.set(brickSeq, new Brick(brick.x, brick.y, brick.width, brick.height, brick.strength));
+                    bricks.set(brickSeq, new Brick(brick.x, brick.y, brick.width, brick.height, brick.strength, brick.x, brick.y, new Powerup(0,0)));
                     $('#brick-container').append('<div id="brick-' + brickSeq + '"></div>');
                     brickSeq++;
                 }
@@ -318,6 +318,18 @@ function update(delta: number) {
             }
         }
         ball.moveAndCollide(gameState, bricks, board, paddle, delta);
+        for (const [i, brick] of bricks) {
+            brick.updateBrick();
+            // Create powerup if one was in brick
+            if(brick.strength == 0){
+                $('#powerup-container').append('<div id="powerup-' + i + '" class="powerup powerup-' + brick.powerup.getPid() + '"></div>');
+                brick.strength = -1;
+            }
+            // Update all powerups
+            if(brick.strength < 0){
+                brick.powerup.updatePowerup();
+            }
+        }
     };
 }
 
