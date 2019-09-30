@@ -35,8 +35,8 @@ $(document).ready(function () {
     })
 });
 
-$("input[type='text']").on("keydown", function (event) {
-    event.stopPropagation();
+$("input[type='text']").on("keydown", function (evt) {
+    evt.stopPropagation();
 });
 
 const HEADER_HEIGHT = 50;
@@ -66,6 +66,8 @@ function clearBoard() {
 }
 
 function initNormalMode() {
+    gameState.startGameState();
+    keysPressed.clear();
     clearBoard();
     for (let j: number = 0; j < 10; j++) {
         for (let i: number = 0; i < 10; i++) {
@@ -82,32 +84,28 @@ function initNormalMode() {
     for (const [i, brick] of bricks) {
         $('#brick-container').append('<div id="brick-' + i + '"></div>');
     }
-    gameState.startGameState();
-    $(document).off("keydown");
-    $(document).off("keyup");
-    $(document).on("keydown", function (event) {
+    
+    $(document).on("keydown", function (evt) {
         if (gameStart) {
-            if (event.key == 'ArrowLeft') {
+            if (evt.key == 'ArrowLeft') {
                 keysPressed.add('left');
-            } else if (event.key == 'ArrowRight') {
+            } else if (evt.key == 'ArrowRight') {
                 keysPressed.add('right');
-            } else if (event.key == ' ') {
+            } else if (evt.key == ' ') {
                 keysPressed.add('space');
-            } else if (event.key == 'Escape' || event.key == 'Esc') {
-                keysPressed.add('escape');
+            } else if (evt.key == 'Escape' || evt.key == 'Esc') {
+                keysPressed.add('restart');
             }
         }
     });
-    $(document).on("keyup", function (event) {
+    $(document).on("keyup", function (evt) {
         if (gameStart) {
-            if (event.key == 'ArrowLeft') {
+            if (evt.key == 'ArrowLeft') {
                 keysPressed.delete('left');
-            } else if (event.key == 'ArrowRight') {
+            } else if (evt.key == 'ArrowRight') {
                 keysPressed.delete('right');
-            } else if (event.key == ' ') {
+            } else if (evt.key == ' ') {
                 keysPressed.delete('space');
-            } else if (event.key == 'Escape' || event.key == 'Esc') {
-                keysPressed.delete('escape');
             }
         }
     });
@@ -153,7 +151,7 @@ function placeGhostBrick(screenX: number, screenY: number, ghostBrick: Brick) {
 }
 
 function getBrickIdAt(x: number, y: number) {
-    // Note: Iterate backwards to prevent counterintuitive selection of rearmost 
+    // Note: Iterate backwards to prevt counterintuitive selection of rearmost 
     // brick when multiple bricks overlap. Frontmost brick should be selected 
     // instead.
     for (const [i, brick] of Array.from(bricks).reverse()) {
@@ -175,10 +173,10 @@ function initLevelEditorMode() {
 
     $(document).off("keydown");
     $(document).off("keyup");
-    $(document).on("keydown", function (event) {
-        if (event.key == ' ') {
+    $(document).on("keydown", function (evt) {
+        if (evt.key == ' ') {
             gridEnabled = !gridEnabled;
-        } else if (event.key.toLowerCase() == 'o') {
+        } else if (evt.key.toLowerCase() == 'o') {
             $(".modal").modal('hide');
             $('#level-editor-open-modal').modal({ backdrop: 'static', keyboard: false });
             $('#level-editor-open-name').val('');
@@ -192,16 +190,16 @@ function initLevelEditorMode() {
                     + levelName
                     + '</button>');
             }
-            $("#level-editor-open-list button").on("click", function (event) {
-                $('#level-editor-open-name').val(event.target.innerHTML);
+            $("#level-editor-open-list button").on("click", function (evt) {
+                $('#level-editor-open-name').val(evt.target.innerHTML);
             });
-        } else if (event.key.toLowerCase() == 's') {
+        } else if (evt.key.toLowerCase() == 's') {
             $(".modal").modal('hide');
             $('#level-editor-save-modal').modal({ backdrop: 'static', keyboard: false });
             $('#level-editor-save-name').val('');
-        } else if (event.key.toLowerCase() == 'n') {
+        } else if (evt.key.toLowerCase() == 'n') {
             clearBoard();
-        } else if (event.key.toLowerCase() == 'h') {
+        } else if (evt.key.toLowerCase() == 'h') {
             if ($('#level-editor-help-modal').is(':visible')) {
                 $(".modal").modal('hide');
             } else {
@@ -218,17 +216,17 @@ function initLevelEditorMode() {
     $('#brick-container').show();
     $('#game-container').show();
     $('#brick-container').css("background", "#3337");
-    $('#brick-container').on("mouseenter", function (event) {
-        placeGhostBrick(event.pageX, event.pageY, ghostBrick);
+    $('#brick-container').on("mouseenter", function (evt) {
+        placeGhostBrick(evt.pageX, evt.pageY, ghostBrick);
         $('#level-editor-ghost-brick').show();
     });
-    $('#brick-container').on("mouseout", function (event) {
+    $('#brick-container').on("mouseout", function (evt) {
         $('#level-editor-ghost-brick').hide();
     });
-    $("#brick-container").on("mousemove", function (event) {
-        placeGhostBrick(event.pageX, event.pageY, ghostBrick);
+    $("#brick-container").on("mousemove", function (evt) {
+        placeGhostBrick(evt.pageX, evt.pageY, ghostBrick);
     });
-    $("#brick-container").on("click", function (event) {
+    $("#brick-container").on("click", function (evt) {
         let brickId = getBrickIdAt(ghostBrick.getX(), ghostBrick.getY());
         if (event.ctrlKey) { 
             // place or remove powerup
@@ -254,11 +252,11 @@ function initLevelEditorMode() {
             }
         }
     });
-    $("#level-editor-brick-strength ul li a").on("click", function (event) {
-        ghostBrick.setStrength(parseInt(event.target.innerText));
+    $("#level-editor-brick-strength ul li a").on("click", function (evt) {
+        ghostBrick.setStrength(parseInt(evt.target.innerText));
     });
-    $("#level-editor-powerup-type ul li a").on("click", function (event) {
-        let powerupType = event.target.innerText;
+    $("#level-editor-powerup-type ul li a").on("click", function (evt) {
+        let powerupType = evt.target.innerText;
         if (powerupType == "Instant break") {
             ghostPowerup = new PowerUp(1, 3);
         } else if (powerupType == "Forcefield") {
@@ -267,7 +265,7 @@ function initLevelEditorMode() {
             ghostPowerup = new PowerUp(3, 3);
         }
     });
-    $("#level-editor-save-confirm").on("click", function (event) {
+    $("#level-editor-save-confirm").on("click", function (evt) {
         if (typeof (Storage) !== "undefined") {
             let bricksJSON = JSON.stringify(Array.from(bricks.values()));
             let levelName = String($("#level-editor-save-name").val());
@@ -276,7 +274,7 @@ function initLevelEditorMode() {
             console.log("Error: Web Storage API is not supported");
         }
     });
-    $("#level-editor-open-confirm").on("click", function (event) {
+    $("#level-editor-open-confirm").on("click", function (evt) {
         if (typeof (Storage) !== "undefined") {
             let levelName = String($("#level-editor-open-name").val());
             let bricksJSON = localStorage.getItem(levelName);
@@ -299,7 +297,7 @@ function initLevelEditorMode() {
             console.log("Error: Web Storage API is not supported");
         }
     });
-    $("#level-editor-open-name").on("input", function (event) {
+    $("#level-editor-open-name").on("input", function (evt) {
         let levelNamePrefix = String($("#level-editor-open-name").val());
         $("#level-editor-open-list button").each(function (i, button) {
             if (button.innerHTML.startsWith(levelNamePrefix)) {
@@ -340,17 +338,20 @@ function update(delta: number) {
             paddle.updatePosition(predict);
 
         }
+        // Key actions
         if (keysPressed.has('left') && !keysPressed.has('right')) {
             paddle.updatePosition('left');
         } else if (keysPressed.has('right') && !keysPressed.has('left')) {
             paddle.updatePosition('right');
         } else if (ball.getVY() == 0) {
             $("#hints").text("Press space to drop the ball");
-            if (keysPressed.has('space') && !keysPressed.has('right') && !keysPressed.has('left')) {
+            if (keysPressed.has('space')) {
                 ball.setVY(-.4);
                 $("#hints").text("");
             }
-        } else if (keysPressed.has('escape')) { location.reload() }
+        } else if (keysPressed.has('restart')) { 
+            location.reload();
+        }
         // Check for powerups
         let activePowerup = gameState.getPowerUp().getPid();
         switch(activePowerup) {

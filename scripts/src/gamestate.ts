@@ -35,14 +35,14 @@ class GameState {
 
     updateGameState() {
         if (this.gameMode == "NormalMode") {
-            $("#lives").text("Lives: " + this.lives);
-            $("#score").text("Score: " + this.score);
+            $("#lives").text(`Lives: ${this.lives}`);
+            $("#score").text(`Score: ${this.score}`);
         } else if (this.gameMode == "ZenMode") {
             $("#lives").text("Lives: ∞");
-            $("#score").text("Score: " + this.score);
+            $("#score").text(`Score: ${this.score}`);
         } else if (this.gameMode == "HardCoreMode") {
-            $("#lives").text("Lives: " + this.lives);
-            $("#score").text("Score: " + this.score);
+            $("#lives").text(`Lives: ${this.lives}`);
+            $("#score").text(`Score: ${this.score}`);
         } else if (this.gameMode == "AILab") {
 
         } else if (this.gameMode == "LevelEditor") {
