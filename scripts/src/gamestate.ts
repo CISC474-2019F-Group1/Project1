@@ -5,20 +5,23 @@ class GameState {
     activePowerUp: PowerUp;
     paddle: Paddle;
     gameMode: string;
-
+    timer: number;
+    solidFloor: boolean;
+    
     constructor(score: number, lives: number,
-                level: number, activePowerUp: PowerUp,
-                paddle: Paddle, gameMode: string) {
+            level: number, activePowerUp: PowerUp,
+            paddle: Paddle, gameMode: string) {
         this.score = score;
         this.activePowerUp = activePowerUp;
         this.level = level;
         this.lives = lives;
         this.gameMode = gameMode;
         this.paddle = paddle;
+        this.timer = 0;
+        this.solidFloor = false;
     }
 
     startGameState() {
-        console.log("this is running")
         if (this.gameMode == "NormalMode") {
             this.lives = 3;
         } else if (this.gameMode == "HardCoreMode") {
@@ -44,9 +47,22 @@ class GameState {
         } else if (this.gameMode == "AILab") {
 
         } else if (this.gameMode == "LevelEditor") {
-
+        
         }
     }
+
+    endPowerUp() {
+        this.activePowerUp = new PowerUp(0,0);
+        console.log("Cleared PowerUp");
+    }
+
+    setPowerup(p:PowerUp) {
+        clearTimeout(this.timer);
+        this.activePowerUp = p;
+        this.timer = setTimeout(this.endPowerUp, p.getDuration()*1000);
+    }
+
+    setFloor(sf: boolean) { this.solidFloor = sf }
 
     setGameMode(str: string) { this.gameMode = str }
 
@@ -57,6 +73,10 @@ class GameState {
     decrementLives() { this.lives -= 1 }
 
     incrementLives() { this.lives += 1 }
+
+    getPowerUp(){ return this.activePowerUp }
+
+    getFloor(){ return this.solidFloor }
 
     getScore() { return this.score }
 
