@@ -101,7 +101,7 @@ class Ball {
                         gameState.incrementLives();
                     }
                     gameState.decrementScoreBy(gameState.getScore());
-                    location.reload();
+                    if (gameState.getGameMode() != "ZenMode") { location.reload(); }
                 }
             }
         }

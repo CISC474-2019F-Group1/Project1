@@ -228,7 +228,7 @@ function initLevelEditorMode() {
     });
     $("#brick-container").on("click", function (evt) {
         let brickId = getBrickIdAt(ghostBrick.getX(), ghostBrick.getY());
-        if (event.ctrlKey) { 
+        if (evt.ctrlKey) { 
             // place or remove powerup
             if (brickId >= 0) {
                 let brick = bricks.get(brickId);
