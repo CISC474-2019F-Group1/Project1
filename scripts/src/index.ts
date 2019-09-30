@@ -1,5 +1,4 @@
-let gameStart = false
-let gameMode = "";
+let gameStart = false;
 
 $(document).ready(function () {
     $('#game-header-bar').hide();
@@ -10,35 +9,34 @@ $(document).ready(function () {
 
     $('#chooseGame').modal({ backdrop: 'static', keyboard: false });
     $('#normalMode').click(function () {
-        initNormalMode();
+        gameState.setGameMode("NormalMode");
         gameStart = true;
-        gameMode = "NormalMode";
+        initNormalMode();
     })
     $('#zenMode').click(function () {
-        initZenMode();
+        gameState.setGameMode("ZenMode");
         gameStart = true;
-        gameMode = "zenMode";
+        initNormalMode();
     })
     $('#hardCore').click(function () {
-        initNormalMode();
+        gameState.setGameMode("HardCoreMode");
         gameStart = true;
-        gameMode = "HardCoreMode";
+        initNormalMode();
     })
     $('#aiLab').click(function () {
-        initNormalMode();
+        gameState.setGameMode("AILab");
         gameStart = true;
-        gameMode = "aiLab";
+        initNormalMode();
     })
     $('#levelEditor').click(function () {
-        initLevelEditorMode();
+        gameState.setGameMode("LevelEditor");
         gameStart = true;
-        gameMode = "LevelEditor";
+        initLevelEditorMode();
     })
-    console.log('Game Mode: ' + gameMode);
 });
 
-$("input[type='text']").on("keydown", function (event) {
-    event.stopPropagation();
+$("input[type='text']").on("keydown", function (evt) {
+    evt.stopPropagation();
 });
 
 const HEADER_HEIGHT = 50;
@@ -52,13 +50,14 @@ const BRICK_HEIGHT = BRICK_WIDTH / 2;
 
 let keysPressed: Set<string> = new Set();
 
-let powerUp: PowerUp;
-let gameState: GameState;
-let board: Board;
-let paddle: Paddle;
-let ball: Ball;
-let brickSeq: number;
+let powerUp = new PowerUp(0, 0);
+let board = new Board(0, BOARD_WIDTH, BOARD_HEIGHT, 0);
+let paddle = new Paddle(BOARD_WIDTH / 2, 10, 200, 20, 5, board.getRightEdgeX());
+let ball = new Ball(BOARD_WIDTH / 2, 100, 0, 0, 10);
+let gameState = new GameState(0, 0, 0, powerUp, paddle, "");
 let bricks: Map<number, Brick>;
+let brickSeq: number;
+let ai = new AI();
 
 function clearBoard() {
     brickSeq = 0;
@@ -67,16 +66,11 @@ function clearBoard() {
 }
 
 function initNormalMode() {
-    powerUp = new PowerUp(0, 0);
-    gameState = new GameState(0, 3, 0, powerUp, gameMode);
-    board = new Board(0, BOARD_WIDTH, BOARD_HEIGHT, 0);
-    paddle = new Paddle(BOARD_WIDTH / 2, 10, 200, 20, 5, board.getRightEdgeX());
-    ball = new Ball(BOARD_WIDTH / 2, 100, 0, 0, 10);
+    gameState.startGameState();
+    keysPressed.clear();
     clearBoard();
     fillBoard();
-
-    $(document).off("keydown");
-    $(document).off("keyup");
+    
     $(document).on("keydown", function (event) {
         if (gameStart) {
             if (event.key == 'ArrowLeft') {
@@ -111,21 +105,16 @@ function initNormalMode() {
     $('#level-editor-ghost-brick').hide();
 }
 
-function areAllBricksBroke(){
-    bricks.forEach(function(el){
-        if(el.getStrength() !== 0 ){
-            return false;
-        }
-    })
-    return true;
-}
-
 function fillBoard(){
     for (let j: number = 0; j < 8; j++) {
         for (let i: number = 0; i < 10; i++) {
             let x: number = (i * BRICK_WIDTH) + (BRICK_WIDTH / 2);
             let y: number = BOARD_HEIGHT - (j * BRICK_HEIGHT) - (BRICK_HEIGHT / 2);
-            bricks.set(brickSeq, new Brick(x, y, BRICK_WIDTH, BRICK_HEIGHT,  x, y, getRndInteger(0,4), powerUp));
+            let r: number = Math.ceil(Math.random() * 25);
+            if(r > 3){
+                r = 0;
+            }
+            bricks.set(brickSeq, new Brick(x, y, BRICK_WIDTH, BRICK_HEIGHT, x, y, getRndInteger(1,4), new PowerUp(r,3)));
             brickSeq++;
         }
     }
@@ -135,55 +124,9 @@ function fillBoard(){
         
 }
 
-function initZenMode() {
-    powerUp = new PowerUp(0, 0);
-    gameState = new GameState(0, 3, 0, powerUp, gameMode);
-    board = new Board(0, BOARD_WIDTH, BOARD_HEIGHT, 0);
-    paddle = new Paddle(BOARD_WIDTH / 2, 10, 200, 20, 5, board.getRightEdgeX());
-    ball = new Ball(BOARD_WIDTH / 2, 100, 0, 0, 10);
-    clearBoard();
-    fillBoard();
-
-
-
-    $(document).off("keydown");
-    $(document).off("keyup");
-    $(document).on("keydown", function (event) {
-        if (gameStart) {
-            if (event.key == 'ArrowLeft') {
-                keysPressed.add('left');
-            } else if (event.key == 'ArrowRight') {
-                keysPressed.add('right');
-            } else if (event.key == ' ') {
-                keysPressed.add('space');
-            }
-        }
-    });
-    $(document).on("keyup", function (event) {
-        if (gameStart) {
-            if (event.key == 'ArrowLeft') {
-                keysPressed.delete('left');
-            } else if (event.key == 'ArrowRight') {
-                keysPressed.delete('right');
-            } else if (event.key == ' ') {
-                keysPressed.delete('space');
-            }
-        }
-    });
-
-    $('#game-header-bar').show();
-    $('#level-editor-header-bar').hide();
-    $('#paddle').show();
-    $('#ball').show();
-    $('#brick-container').show();
-    $('#game-container').show();
-    $('#brick-container').css("background", "#3330");
-    $("#brick-container").off("mousemove");
-    $('#level-editor-ghost-brick').hide();
-}
-
 let gridEnabled: boolean;
 let ghostBrick: Brick;
+let ghostPowerup: PowerUp;
 
 function placeGhostBrick(screenX: number, screenY: number, ghostBrick: Brick) {
     // Calculate board scaling and offset
@@ -211,7 +154,7 @@ function placeGhostBrick(screenX: number, screenY: number, ghostBrick: Brick) {
 }
 
 function getBrickIdAt(x: number, y: number) {
-    // Note: Iterate backwards to prevent counterintuitive selection of rearmost 
+    // Note: Iterate backwards to prevt counterintuitive selection of rearmost 
     // brick when multiple bricks overlap. Frontmost brick should be selected 
     // instead.
     for (const [i, brick] of Array.from(bricks).reverse()) {
@@ -227,15 +170,16 @@ function getBrickIdAt(x: number, y: number) {
 
 function initLevelEditorMode() {
     gridEnabled = true;
-    ghostBrick = new Brick(0, 0, BRICK_WIDTH, BRICK_HEIGHT, 3, 0, 0, new PowerUp(0, 0));
+    ghostBrick = new Brick(0, 0, BRICK_WIDTH, BRICK_HEIGHT, 0, 0, 3, new PowerUp(0, 3));
+    ghostPowerup = new PowerUp(1, 3);
     clearBoard();
 
     $(document).off("keydown");
     $(document).off("keyup");
-    $(document).on("keydown", function (event) {
-        if (event.key == ' ') {
+    $(document).on("keydown", function (evt) {
+        if (evt.key == ' ') {
             gridEnabled = !gridEnabled;
-        } else if (event.key.toLowerCase() == 'o') {
+        } else if (evt.key.toLowerCase() == 'o') {
             $(".modal").modal('hide');
             $('#level-editor-open-modal').modal({ backdrop: 'static', keyboard: false });
             $('#level-editor-open-name').val('');
@@ -249,16 +193,16 @@ function initLevelEditorMode() {
                     + levelName
                     + '</button>');
             }
-            $("#level-editor-open-list button").on("click", function (event) {
-                $('#level-editor-open-name').val(event.target.innerHTML);
+            $("#level-editor-open-list button").on("click", function (evt) {
+                $('#level-editor-open-name').val(evt.target.innerHTML);
             });
-        } else if (event.key.toLowerCase() == 's') {
+        } else if (evt.key.toLowerCase() == 's') {
             $(".modal").modal('hide');
             $('#level-editor-save-modal').modal({ backdrop: 'static', keyboard: false });
             $('#level-editor-save-name').val('');
-        } else if (event.key.toLowerCase() == 'n') {
+        } else if (evt.key.toLowerCase() == 'n') {
             clearBoard();
-        } else if (event.key.toLowerCase() == 'h') {
+        } else if (evt.key.toLowerCase() == 'h') {
             if ($('#level-editor-help-modal').is(':visible')) {
                 $(".modal").modal('hide');
             } else {
@@ -275,31 +219,56 @@ function initLevelEditorMode() {
     $('#brick-container').show();
     $('#game-container').show();
     $('#brick-container').css("background", "#3337");
-    $('#brick-container').on("mouseenter", function (event) {
-        placeGhostBrick(event.pageX, event.pageY, ghostBrick);
+    $('#brick-container').on("mouseenter", function (evt) {
+        placeGhostBrick(evt.pageX, evt.pageY, ghostBrick);
         $('#level-editor-ghost-brick').show();
     });
-    $('#brick-container').on("mouseout", function (event) {
+    $('#brick-container').on("mouseout", function (evt) {
         $('#level-editor-ghost-brick').hide();
     });
-    $("#brick-container").on("mousemove", function (event) {
-        placeGhostBrick(event.pageX, event.pageY, ghostBrick);
+    $("#brick-container").on("mousemove", function (evt) {
+        placeGhostBrick(evt.pageX, evt.pageY, ghostBrick);
     });
-    $("#brick-container").on("click", function (event) {
+    $("#brick-container").on("click", function (evt) {
         let brickId = getBrickIdAt(ghostBrick.getX(), ghostBrick.getY());
-        if (brickId < 0) {
-            bricks.set(brickSeq, ghostBrick.clone());
-            $('#brick-container').append('<div id="brick-' + brickSeq + '"></div>');
-            brickSeq++;
-        } else {
-            bricks.delete(brickId);
-            $('#brick-' + brickId).remove();
+        if (evt.ctrlKey) { 
+            // place or remove powerup
+            if (brickId >= 0) {
+                let brick = bricks.get(brickId);
+                if (brick != undefined) {
+                    if (brick.getPowerUp().getPid() == 0) {
+                        brick.setPowerUp(ghostPowerup.clone());
+                    } else {
+                        brick.setPowerUp(new PowerUp(0, 3));
+                    }
+                }
+            }
+        } else { 
+            // place or remove brick
+            if (brickId < 0) {
+                bricks.set(brickSeq, ghostBrick.clone());
+                $('#brick-container').append('<div id="brick-' + brickSeq + '"></div>');
+                brickSeq++;
+            } else {
+                bricks.delete(brickId);
+                $('#brick-' + brickId).remove();
+            }
         }
     });
-    $("#level-editor-brick-strength ul li a").on("click", function (event) {
-        ghostBrick.setStrength(parseInt(event.target.innerText));
+    $("#level-editor-brick-strength ul li a").on("click", function (evt) {
+        ghostBrick.setStrength(parseInt(evt.target.innerText));
     });
-    $("#level-editor-save-confirm").on("click", function (event) {
+    $("#level-editor-powerup-type ul li a").on("click", function (evt) {
+        let powerupType = evt.target.innerText;
+        if (powerupType == "Instant break") {
+            ghostPowerup = new PowerUp(1, 3);
+        } else if (powerupType == "Forcefield") {
+            ghostPowerup = new PowerUp(2, 3);
+        } else if (powerupType == "Extended paddle") {
+            ghostPowerup = new PowerUp(3, 3);
+        }
+    });
+    $("#level-editor-save-confirm").on("click", function (evt) {
         if (typeof (Storage) !== "undefined") {
             let bricksJSON = JSON.stringify(Array.from(bricks.values()));
             let levelName = String($("#level-editor-save-name").val());
@@ -308,7 +277,7 @@ function initLevelEditorMode() {
             console.log("Error: Web Storage API is not supported");
         }
     });
-    $("#level-editor-open-confirm").on("click", function (event) {
+    $("#level-editor-open-confirm").on("click", function (evt) {
         if (typeof (Storage) !== "undefined") {
             let levelName = String($("#level-editor-open-name").val());
             let bricksJSON = localStorage.getItem(levelName);
@@ -318,9 +287,11 @@ function initLevelEditorMode() {
                 return false;
             } else {
                 let bricksArray = <any[]>JSON.parse(bricksJSON);
+                console.log(bricksArray);
                 clearBoard();
                 for (let brick of bricksArray) {
-                    bricks.set(brickSeq, new Brick(brick.x, brick.y, brick.width, brick.height, brick.strength, brick.x, brick.y, new PowerUp(0, 0)));
+                    let powerup = new PowerUp(brick.powerup.pid, brick.powerup.duration);
+                    bricks.set(brickSeq, new Brick(brick.x, brick.y, brick.width, brick.height, brick.x, brick.y, brick.strength, powerup));
                     $('#brick-container').append('<div id="brick-' + brickSeq + '"></div>');
                     brickSeq++;
                 }
@@ -329,7 +300,7 @@ function initLevelEditorMode() {
             console.log("Error: Web Storage API is not supported");
         }
     });
-    $("#level-editor-open-name").on("input", function (event) {
+    $("#level-editor-open-name").on("input", function (evt) {
         let levelNamePrefix = String($("#level-editor-open-name").val());
         $("#level-editor-open-list button").each(function (i, button) {
             if (button.innerHTML.startsWith(levelNamePrefix)) {
@@ -341,53 +312,103 @@ function initLevelEditorMode() {
     });
 }
 
-function computer() {
-    if ((ball.getX() - paddle.getX() - paddle.width * 0.1) > paddle.width * 0.2) {
-        if (paddle.getX() < window.innerWidth - paddle.width) {
-            paddle.updatePosition('right');
-        }
-    }
-    else if ((ball.getX() - paddle.getX() - paddle.width * 0.1) < paddle.width * 0.2) {
-        if (paddle.getX() > 0) {
-            paddle.updatePosition('left');
-        }
-    }
-}
+// function computer() {
+//     if ((ball.getX() - paddle.getX() - paddle.width * 0.1) > paddle.width * 0.2) {
+//         if (paddle.getX() < window.innerWidth - paddle.width) {
+//             paddle.updatePosition('right');
+//         }
+//     }
+//     else if ((ball.getX() - paddle.getX() - paddle.width * 0.1) < paddle.width * 0.2) {
+//         if (paddle.getX() > 0) {
+//             paddle.updatePosition('left');
+//         }
+//     }
+// }
 
 let lastFrameTimeMs: number = 0;
 let maxFPS: number = 120;
 let delta: number = 0;
 let timestep: number = 1000 / 120;
+let bStrength: number = 1;
 
 function update(delta: number) {
-    if (gameStart && gameMode != "LevelEditor") {
-        if (gameMode == 'AILAB') {
-            console.log('ai running');
-            computer();
+    if (gameStart && gameState.getGameMode() != "LevelEditor") {
+        if (gameState.getGameMode() == 'AILab') {
+            // console.log('AI Running');
+            // computer();
+            ai.save_data(paddle,ball,gameState); 
+            let predict: string = ai.predict(paddle,ball,board);
+            paddle.updatePosition(predict);
+
         }
+        // Key actions
         if (keysPressed.has('left') && !keysPressed.has('right')) {
             paddle.updatePosition('left');
         } else if (keysPressed.has('right') && !keysPressed.has('left')) {
             paddle.updatePosition('right');
         } else if (ball.getVY() == 0) {
-            document.querySelector<HTMLElement>("#hints")!.innerHTML = "Press space to drop the ball";
-            if (keysPressed.has('space') && !keysPressed.has('right') && !keysPressed.has('left')) {
+            $("#hints").text("Press space to drop the ball");
+            if (keysPressed.has('space')) {
                 ball.setVY(-.4);
-                document.querySelector<HTMLElement>("#hints")!.innerHTML = "";
+                $("#hints").text("");
             }
+        } else if (keysPressed.has('restart')) { 
+            location.reload();
         }
-        ball.moveAndCollide(gameState, bricks, board, paddle, delta);
+        // Check for powerups
+        let activePowerup = gameState.getPowerUp().getPid();
+        switch(activePowerup) {
+            case 1: // Super strength
+                bStrength = 3;
+                $("#hints").text("Super Strength");
+                if (gameState.getGameMode() == "HardCoreMode") { 
+                    paddle.setWidth(100);
+                } else {
+                    paddle.setWidth(200);
+                }
+                gameState.setFloor(false);
+                break;
+            case 2: // Solid floor
+                bStrength = 1;
+                $("#hints").text("Solid Floor");
+                if (gameState.getGameMode() == "HardCoreMode") { 
+                    paddle.setWidth(100);
+                } else {
+                    paddle.setWidth(200);
+                }
+                gameState.setFloor(true);
+                break;
+            case 3: // Big paddle
+                bStrength = 1;
+                if (gameState.getGameMode() == "HardCoreMode") { 
+                    paddle.setWidth(200);
+                } else {
+                    paddle.setWidth(400);
+                }
+                $("#hints").text("Big Paddle");
+                gameState.setFloor(false);
+                break;
+            default: // No powerup
+                bStrength = 1;
+                gameState.setFloor(false);
+                if (gameState.getGameMode() == "HardCoreMode") { 
+                    paddle.setWidth(100);
+                } else {
+                    paddle.setWidth(200);
+                }
+                break;
+        }
+        ball.moveAndCollide(gameState, bricks, board, paddle, delta, bStrength);
+        gameState.updateGameState();
         for (const [i, brick] of bricks) {
             brick.updateBrick();
-            // Create powerup if one was in brick
-            if (brick.strength == 0) {
-                $('#powerup-container').append('<div id="powerup-' + i + '" class="powerup powerup-' + brick.powerup.getPid() + '"></div>');
+            // Apply powerup if one was in brick
+            if(brick.strength == 0){
+                if(brick.getPowerUp().getPid() != 0){
+                    gameState.setPowerup(brick.getPowerUp());
+                }
                 brick.strength = -1;
                 
-            }
-            // Update all powerups
-            if (brick.strength < 0) {
-                brick.powerup.updatePowerUp();
             }
         }
         if(bricks.size === 0){
@@ -418,23 +439,19 @@ function drawLevelEditor() {
         });
 
     $('#level-editor-ghost-brick')
-        .css({
-            "left": (ghostBrick.getLeftX() * scale) + xOffset,
-            "bottom": (ghostBrick.getBottomY() * scale) + yOffset,
-            "width": ghostBrick.getWidth() * scale,
-            "height": ghostBrick.getHeight() * scale
-        })
-        .attr('class', 'brick strength-' + ghostBrick.getStrength());
-
+        .css({ "left": (ghostBrick.getLeftX() * scale) + xOffset,
+               "bottom": (ghostBrick.getBottomY() * scale) + yOffset,
+               "width": ghostBrick.getWidth() * scale,
+               "height": ghostBrick.getHeight() * scale })
+        .attr('class', 'brick strength-' + ghostBrick.getStrength() + " powerup-" + ghostBrick.getPowerUp().getPid());
+    
     for (const [i, brick] of bricks) {
         $('#brick-' + i)
-            .css({
-                "left": (brick.getLeftX() * scale) + xOffset,
-                "bottom": (brick.getBottomY() * scale) + yOffset,
-                "width": brick.getWidth() * scale,
-                "height": brick.getHeight() * scale
-            })
-            .attr('class', 'brick strength-' + brick.getStrength());
+            .css({ "left": (brick.getLeftX() * scale) + xOffset,
+                   "bottom": (brick.getBottomY() * scale) + yOffset,
+                   "width": brick.getWidth() * scale,
+                   "height": brick.getHeight() * scale })
+            .attr('class', 'brick strength-' + brick.getStrength() + " powerup-" + brick.getPowerUp().getPid());
     }
 }
 
@@ -477,7 +494,7 @@ function drawGame() {
                     "width": brick.getWidth() * scale,
                     "height": brick.getHeight() * scale
                 })
-                .attr('class', 'brick strength-' + brick.getStrength());
+                .attr('class', 'brick strength-' + brick.getStrength() + " powerup-" + brick.getPowerUp().getPid());
 
             if(brick.getStrength() === -1){
                 bricks.delete(i);
@@ -487,7 +504,7 @@ function drawGame() {
 }
 
 function draw() {
-    if (gameMode == "LevelEditor") {
+    if (gameState.getGameMode() == "LevelEditor") {
         drawLevelEditor();
     } else {
         drawGame();

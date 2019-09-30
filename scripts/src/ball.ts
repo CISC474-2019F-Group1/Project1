@@ -14,9 +14,9 @@ class Ball {
         this.vy = vy;
         this.radius = radius;
     }
-
+    
     moveAndCollide(gameState: GameState, bricks: Map<number, Brick>, 
-                    board: Board, paddle: Paddle, delta: number) {
+                     board: Board, paddle: Paddle, delta: number, ballStrength: number) {
         let prevX: number = this.x;
         let prevY: number = this.y;
 
@@ -46,7 +46,7 @@ class Ball {
                 }
 
                 // Lower strength of brick
-                brick.decrementStrength();
+                brick.decrementStrengthBy(ballStrength);
                 // Give points for destroying brick
                 if (brick.getStrength() < 1) {
                     gameState.incrementScoreBy(5);
@@ -55,7 +55,6 @@ class Ball {
                 } else {
                     gameState.incrementScoreBy(1);
                 }
-
                 return;
             }
         }
@@ -79,20 +78,32 @@ class Ball {
             this.vy = -this.vy;
             return;
         } else if (this.y - board.getBottomEdgeY() < this.radius) {
-            // Move back to original position
-            this.x = BOARD_WIDTH / 2;
-            this.y = 100;
-            this.vx = 0;
-            this.vy = 0;
-            this.radius = 10;
-            if (gameState.getGameMode() != "zenMode") {
-                gameState.decrementLives();
+            if(gameState.getFloor()) {
+                // If there is a solid floor, just bounce
+                this.x = prevX;
+                this.y = prevY;
+
+                this.vy = -this.vy;
+            } else {
+                // Move back to original position
+                this.x = BOARD_WIDTH / 2;
+                this.y = 100;
+                this.vx = 0;
+                this.vy = 0;
+                this.radius = 10;
+                gameState.endPowerUp();
+                if (gameState.getGameMode() != "ZenMode") { gameState.decrementLives(); }
+                // Lose state
                 if (gameState.getLives() < 1) {
+                    if (gameState.getGameMode() == "NormalMode") {
+                        for (let i: number = 0; i < 3; i++) { gameState.incrementLives(); }
+                    } else if (gameState.getGameMode() == "HardCoreMode") {
+                        gameState.incrementLives();
+                    }
                     gameState.decrementScoreBy(gameState.getScore());
-                    for (let i: number = 0; i < 3; i++) { gameState.incrementLives(); }
+                    if (gameState.getGameMode() != "ZenMode") { location.reload(); }
                 }
-            } 
-            return;
+            }
         }
 
         // Collide paddle
@@ -112,7 +123,6 @@ class Ball {
                 // Collision with vertical side
                 this.vx = -this.vx;
             }
-            return;
         }
     }
 

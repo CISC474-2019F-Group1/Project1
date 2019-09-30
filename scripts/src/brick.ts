@@ -23,11 +23,8 @@ class Brick extends Rectangle {
         this.powerup = p;
     }
     
-    decrementStrength() {
-        this.strength -= 1;
-        if((this.strength == 0) && (this.powerup != null)){
-            this.powerup.place(this.x,this.y);
-        }
+    decrementStrengthBy(amt: number) {
+        this.strength -= amt;
     }
 
     updateBrick() {
@@ -65,16 +62,20 @@ class Brick extends Rectangle {
         this.strength = strength;
     }
     
+    setPowerUp(powerup: PowerUp) {
+        this.powerup = powerup;
+    }
+    
     clone() {
         return new Brick(
             super.getX(), 
             super.getY(), 
             super.getWidth(), 
             super.getHeight(), 
-            this.getStrength(),
             this.getEndX(),
             this.getEndY(),
-            this.getPowerup());
+            this.getStrength(),
+            this.getPowerUp());
     }
     
     getStrength() { return this.strength }
@@ -91,6 +92,6 @@ class Brick extends Rectangle {
 
     getSpeedY() { return this.speedY }
 
-    getPowerup() { return this.powerup }
+    getPowerUp() { return this.powerup }
     
 }

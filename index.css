@@ -3,7 +3,7 @@ body{
     height: 100vh;
     overflow-x: hidden;
     overflow-y: hidden;
-    background-image: url("images/background.png");
+    background-image: url("./images/background.png");
 }
 
 #level-editor-open-list {
@@ -78,21 +78,34 @@ body{
     padding: 0px;
     box-sizing: border-box;
     pointer-events:none;
+    background-size: 50% auto;
+    background-position: center center;
+    background-repeat: no-repeat;
+    border: 1px outset #FFF;
 }
 
 .strength-0{
-    display: none;
+    border: none !important;
+    background-image: none !important;
+}
+
+.strength--1{
+    border: none !important;
+    background-image: none !important;
+}
+
+.strength--2{
+    border: none !important;
+    background-image: none !important;
 }
 
 .strength-1{
-    
     background-color: #00F;
     border: 1px outset #FFF;
 }
 
 .strength-2{
     background-color: #F0F;
-    
     border: 1px outset #FFF;
 }
 
@@ -102,27 +115,25 @@ body{
 }
 
 .powerup{
-
     width: 30px;
     height: 30px;
     border-radius: 50%;
     position: absolute;
+}
 
+.powerup-0{
+    border: 1px outset #FFF;
+    background-image: none;
 }
 
 .powerup-1{
-    background-color: #0F0;
-    
-
+    background-image: url(./images/super_strength.png);
 }
 
 .powerup-2{
-    background-color: #F00;
-    
-
+    background-image: url(./images/solid_floor.png);
 }
 
 .powerup-3{
-    background-color: #FF0;
-
+    background-image: url(./images/big_paddle.png);
 }
