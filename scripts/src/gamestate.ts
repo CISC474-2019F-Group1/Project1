@@ -25,7 +25,6 @@ class GameState {
         if (this.gameMode == "NormalMode") {
             this.lives = 3;
         } else if (this.gameMode == "HardCoreMode") {
-            this.paddle.setWidthMultBy(.5);
             this.lives = 1;
         } else if (this.gameMode == "AILab") {
 

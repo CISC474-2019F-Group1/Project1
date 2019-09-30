@@ -66,7 +66,6 @@ function clearBoard() {
 
 function initNormalMode() {
     clearBoard();
-    gameState.startGameState();
     for (let j: number = 0; j < 10; j++) {
         for (let i: number = 0; i < 10; i++) {
             let x: number = (i * BRICK_WIDTH) + (BRICK_WIDTH / 2);
@@ -79,7 +78,7 @@ function initNormalMode() {
     for (const [i, brick] of bricks) {
         $('#brick-container').append('<div id="brick-' + i + '"></div>');
     }
-
+    gameState.startGameState();
     $(document).off("keydown");
     $(document).off("keyup");
     $(document).on("keydown", function (event) {
@@ -90,6 +89,8 @@ function initNormalMode() {
                 keysPressed.add('right');
             } else if (event.key == ' ') {
                 keysPressed.add('space');
+            } else if (event.key == 'Escape' || event.key == 'Esc') {
+                keysPressed.add('escape');
             }
         }
     });
@@ -101,6 +102,8 @@ function initNormalMode() {
                 keysPressed.delete('right');
             } else if (event.key == ' ') {
                 keysPressed.delete('space');
+            } else if (event.key == 'Escape' || event.key == 'Esc') {
+                keysPressed.delete('escape');
             }
         }
     });
@@ -310,32 +313,48 @@ function update(delta: number) {
                 ball.setVY(-.4);
                 $("#hints").text("");
             }
-        }
+        } else if (keysPressed.has('escape')) { location.reload() }
         // Check for powerups
         let activePowerup = gameState.getPowerUp().getPid();
         switch(activePowerup) {
             case 1: // Super strength
                 bStrength = 3;
-                paddle.setWidth(200);
                 $("#hints").text("Super Strength");
+                if (gameState.getGameMode() == "HardCoreMode") { 
+                    paddle.setWidth(100);
+                } else {
+                    paddle.setWidth(200);
+                }
                 gameState.setFloor(false);
                 break;
             case 2: // Solid floor
                 bStrength = 1;
-                paddle.setWidth(200);
                 $("#hints").text("Solid Floor");
+                if (gameState.getGameMode() == "HardCoreMode") { 
+                    paddle.setWidth(100);
+                } else {
+                    paddle.setWidth(200);
+                }
                 gameState.setFloor(true);
                 break;
             case 3: // Big paddle
                 bStrength = 1;
-                paddle.setWidth(400);
+                if (gameState.getGameMode() == "HardCoreMode") { 
+                    paddle.setWidth(200);
+                } else {
+                    paddle.setWidth(400);
+                }
                 $("#hints").text("Big Paddle");
                 gameState.setFloor(false);
                 break;
             default: // No powerup
                 bStrength = 1;
-                paddle.setWidth(200);
                 gameState.setFloor(false);
+                if (gameState.getGameMode() == "HardCoreMode") { 
+                    paddle.setWidth(100);
+                } else {
+                    paddle.setWidth(200);
+                }
                 break;
         }
         ball.moveAndCollide(gameState, bricks, board, paddle, delta, bStrength);

@@ -21,7 +21,7 @@ class Paddle extends Rectangle {
     }
 
     setWidthMultBy(scale: number) {
-        this.width = Math.floor(scale * this.width);
+        this.width = Math.floor(this.width * scale);
         $('#paddle').css("width", this.width);
     }
 
