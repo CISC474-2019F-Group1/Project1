@@ -6,16 +6,12 @@ class Brick extends Rectangle {
     endY: number;
     speedX: number;
     speedY: number;
-    powerup: Powerup;
+    powerup: PowerUp;
     
-    constructor(x: number, 
-                y: number, 
-                width: number, 
-                height: number, 
-                strength: number,
-                endX: number,
-                endY: number,
-                p: Powerup) {
+    constructor(x: number, y: number, 
+                width: number, height: number, 
+                endX: number, endY: number,
+                strength: number, p: PowerUp) {
         super(x, y, width, height);
         this.strength = strength;
         this.initX = x;
@@ -33,75 +29,34 @@ class Brick extends Rectangle {
             this.powerup.place(this.x,this.y);
         }
     }
-    
-    getStrength() {
-        return this.strength;
-    }
-
-    getInitX(){
-        return this.initX;
-    }
-
-    getInitY(){
-        return this.initY;
-    }
-
-    getEndX(){
-        return this.endX;
-    }
-
-    getEndY(){
-        return this.endY;
-    }
-
-    getSpeedX(){
-        return this.speedX;
-    }
-
-    getSpeedY(){
-        return this.speedY;
-    }
-
-    getPowerup(){
-        return this.powerup;
-    }
 
     updateBrick() {
-
-        if(this.speedX > 0){
-
-            if(this.x + this.speedX < this.endX){
+        if (this.speedX > 0) {
+            if (this.x + this.speedX < this.endX) {
                 this.x += this.speedX;
-            }else{
+            } else {
                 this.speedX = this.speedX * -1;
             }
-
-        }else{
-
-            if(this.x + this.speedX > this.initX){
+        } else {
+            if (this.x + this.speedX > this.initX) {
                 this.x += this.speedX;
-            }else{
+            } else {
                 this.speedX = this.speedX * -1;
             }
-
         }
 
-        if(this.speedY > 0){
-
-            if(this.y + this.speedY < this.endY){
+        if (this.speedY > 0) {
+            if (this.y + this.speedY < this.endY) {
                 this.y += this.speedY;
-            }else{
+            } else {
                 this.speedY = this.speedY * -1;
             }
-
-        }else{
-
-            if(this.y + this.speedY > this.initY){
+        } else {
+            if (this.y + this.speedY > this.initY) {
                 this.y += this.speedY;
-            }else{
+            } else {
                 this.speedY = this.speedY * -1;
             }
-
         }
 
     }
@@ -121,5 +76,21 @@ class Brick extends Rectangle {
             this.getEndY(),
             this.getPowerup());
     }
+    
+    getStrength() { return this.strength }
+
+    getInitX() { return this.initX }
+
+    getInitY() { return this.initY }
+
+    getEndX() { return this.endX }
+
+    getEndY() { return this.endY }
+
+    getSpeedX() { return this.speedX }
+
+    getSpeedY() { return this.speedY }
+
+    getPowerup() { return this.powerup }
     
 }

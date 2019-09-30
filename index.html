@@ -14,7 +14,7 @@
     integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
   <!-- Bootstrap script -->
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
-    integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" 
+    integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
     crossorigin="anonymous"></script>
 </head>
 
@@ -27,17 +27,17 @@
   <div id="level-editor-header-bar" class="header-bar">
     <div id="level-editor-brick-strength" class="header-bar-left dropdown">
       <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Brick Strength
-      <span class="caret"></span></button>
+        <span class="caret"></span></button>
       <ul class="dropdown-menu">
         <li><a href="#">1</a></li>
         <li><a href="#">2</a></li>
         <li><a href="#">3</a></li>
       </ul>
-    </div> 
+    </div>
     <span id="level-editor-hint" class="header-bar-hint">Press h to toggle help</span>
     <div id="level-editor-powerup-type" class="header-bar-right dropdown">
       <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Powerup Type
-      <span class="caret"></span></button>
+        <span class="caret"></span></button>
       <ul class="dropdown-menu">
         <li><a href="#">Long paddle</a></li>
         <li><a href="#">Instant break</a></li>
@@ -46,7 +46,7 @@
         <li><a href="#">Lasers</a></li>
         <li><a href="#">Double score</a></li>
       </ul>
-    </div> 
+    </div>
   </div>
   <div id="game-container">
     <div id="paddle"></div>
@@ -65,22 +65,22 @@
         <div class="modal-body">
           <p>Select a game mode:</p>
           <div class="list-group">
-            <button type="button" class="list-group-item list-group-item-action" 
-              data-dismiss="modal" id="normalMode">Normal Mode</button>
-            <button type="button" class="list-group-item list-group-item-action" 
-              data-dismiss="modal" id="zenMode">Zen Mode</button>
-            <button type="button" class="list-group-item list-group-item-action" 
-              data-dismiss="modal" id="hardCore">Hardcore Mode</button>
-            <button type="button" class="list-group-item list-group-item-action" 
-              data-dismiss="modal" id="aiLab">AI Lab</button>
-            <button type="button" class="list-group-item list-group-item-action" 
-              data-dismiss="modal" id="levelEditor">Level Editor</button>
+            <button type="button" class="list-group-item list-group-item-action" data-dismiss="modal"
+              id="normalMode">Normal Mode</button>
+            <button type="button" class="list-group-item list-group-item-action" data-dismiss="modal" id="zenMode">Zen
+              Mode</button>
+            <button type="button" class="list-group-item list-group-item-action" data-dismiss="modal"
+              id="hardCore">Hardcore Mode</button>
+            <button type="button" class="list-group-item list-group-item-action" data-dismiss="modal" id="aiLab">AI
+              Lab</button>
+            <button type="button" class="list-group-item list-group-item-action" data-dismiss="modal"
+              id="levelEditor">Level Editor</button>
           </div>
         </div>
       </div>
     </div>
   </div>
-  
+
   <!-- Modal for loading from local storage -->
   <div id="level-editor-open-modal" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
@@ -97,12 +97,13 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" data-dismiss="modal" id='level-editor-open-confirm'>Open</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal"
+            id='level-editor-open-confirm'>Open</button>
         </div>
       </div>
     </div>
   </div>
-  
+
   <!-- Modal for saving to local storage -->
   <div id="level-editor-save-modal" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
@@ -116,12 +117,13 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" data-dismiss="modal" id='level-editor-save-confirm'>Save</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal"
+            id='level-editor-save-confirm'>Save</button>
         </div>
       </div>
     </div>
   </div>
-  
+
   <!-- Modal for level editor help display -->
   <div id="level-editor-help-modal" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
