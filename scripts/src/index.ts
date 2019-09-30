@@ -28,6 +28,10 @@ $(document).ready(function () {
         gameStart = true;
         initNormalMode();
     })
+    $('#customLevelMode').click(function () {
+        gameState.setGameMode("CustomLevelMode");
+        initCustomLevelMode();
+    });
     $('#levelEditor').click(function () {
         gameState.setGameMode("LevelEditor");
         gameStart = true;
@@ -84,6 +88,98 @@ function initNormalMode() {
     for (const [i, brick] of bricks) {
         $('#brick-container').append('<div id="brick-' + i + '"></div>');
     }
+    
+    $(document).on("keydown", function (evt) {
+        if (gameStart) {
+            if (evt.key == 'ArrowLeft') {
+                keysPressed.add('left');
+            } else if (evt.key == 'ArrowRight') {
+                keysPressed.add('right');
+            } else if (evt.key == ' ') {
+                keysPressed.add('space');
+            } else if (evt.key == 'Escape' || evt.key == 'Esc') {
+                keysPressed.add('restart');
+            }
+        }
+    });
+    $(document).on("keyup", function (evt) {
+        if (gameStart) {
+            if (evt.key == 'ArrowLeft') {
+                keysPressed.delete('left');
+            } else if (evt.key == 'ArrowRight') {
+                keysPressed.delete('right');
+            } else if (evt.key == ' ') {
+                keysPressed.delete('space');
+            }
+        }
+    });
+
+    $('#game-header-bar').show();
+    $('#level-editor-header-bar').hide();
+    $('#paddle').show();
+    $('#ball').show();
+    $('#brick-container').show();
+    $('#game-container').show();
+    $('#brick-container').css("background", "#3330");
+    $("#brick-container").off("mousemove");
+    $('#level-editor-ghost-brick').hide();
+}
+
+function initCustomLevelMode() {
+    gameState.startGameState();
+    keysPressed.clear();
+    clearBoard();
+    
+    $(".modal").modal('hide');
+    $('#level-editor-open-modal').modal({ backdrop: 'static', keyboard: false });
+    $('#level-editor-open-name').val('');
+    $("#level-editor-open-name-group").removeClass("has-error");
+    $("#level-editor-open-list").empty();
+    for (var i = 0; i < localStorage.length; i++) {
+        let levelName = localStorage.key(i);
+        console.log(levelName);
+        $("#level-editor-open-list").append(
+            '<button type="button" class="list-group-item list-group-item-action">'
+            + levelName
+            + '</button>');
+    }
+    $("#level-editor-open-list button").on("click", function (evt) {
+        $('#level-editor-open-name').val(evt.target.innerHTML);
+    });
+    $("#level-editor-open-confirm").on("click", function (evt) {
+        if (typeof (Storage) !== "undefined") {
+            let levelName = String($("#level-editor-open-name").val());
+            let bricksJSON = localStorage.getItem(levelName);
+            if (bricksJSON == null) {
+                $("#level-editor-open-name-group").addClass("has-error");
+                console.log("Warning: Requested level does not exist");
+                return false;
+            } else {
+                let bricksArray = <any[]>JSON.parse(bricksJSON);
+                console.log(bricksArray);
+                clearBoard();
+                for (let brick of bricksArray) {
+                    let powerup = new PowerUp(brick.powerup.pid, brick.powerup.duration);
+                    bricks.set(brickSeq, new Brick(brick.x, brick.y, brick.width, brick.height, brick.x, brick.y, brick.strength, powerup));
+                    $('#brick-container').append('<div id="brick-' + brickSeq + '"></div>');
+                    brickSeq++;
+                }
+                gameStart = true;
+            }
+        } else {
+            console.log("Error: Web Storage API is not supported");
+        }
+    });
+    $("#level-editor-open-name").on("input", function (evt) {
+        let levelNamePrefix = String($("#level-editor-open-name").val());
+        $("#level-editor-open-list button").each(function (i, button) {
+            if (button.innerHTML.startsWith(levelNamePrefix)) {
+                $(button).show();
+            } else {
+                $(button).hide();
+            }
+        });
+    });
     
     $(document).on("keydown", function (evt) {
         if (gameStart) {
@@ -228,7 +324,7 @@ function initLevelEditorMode() {
     });
     $("#brick-container").on("click", function (evt) {
         let brickId = getBrickIdAt(ghostBrick.getX(), ghostBrick.getY());
-        if (event.ctrlKey) { 
+        if (evt.ctrlKey) { 
             // place or remove powerup
             if (brickId >= 0) {
                 let brick = bricks.get(brickId);
@@ -257,11 +353,11 @@ function initLevelEditorMode() {
     });
     $("#level-editor-powerup-type ul li a").on("click", function (evt) {
         let powerupType = evt.target.innerText;
-        if (powerupType == "Instant break") {
+        if (powerupType == "Super Strength") {
             ghostPowerup = new PowerUp(1, 3);
-        } else if (powerupType == "Forcefield") {
+        } else if (powerupType == "Solid Floor") {
             ghostPowerup = new PowerUp(2, 3);
-        } else if (powerupType == "Extended paddle") {
+        } else if (powerupType == "Big Paddle") {
             ghostPowerup = new PowerUp(3, 3);
         }
     });
