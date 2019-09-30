@@ -23,7 +23,7 @@ class Brick extends Rectangle {
         this.powerup = p;
     }
     
-    decrementStrength(amt: number) {
+    decrementStrengthBy(amt: number) {
         this.strength -= amt;
     }
 
@@ -71,7 +71,7 @@ class Brick extends Rectangle {
             this.getStrength(),
             this.getEndX(),
             this.getEndY(),
-            this.getPowerup());
+            this.getPowerUp());
     }
     
     getStrength() { return this.strength }
@@ -88,6 +88,6 @@ class Brick extends Rectangle {
 
     getSpeedY() { return this.speedY }
 
-    getPowerup() { return this.powerup }
+    getPowerUp() { return this.powerup }
     
 }

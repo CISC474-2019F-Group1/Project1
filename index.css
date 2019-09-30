@@ -3,7 +3,7 @@ body{
     height: 100vh;
     overflow-x: hidden;
     overflow-y: hidden;
-    background-image: url("images/background.png");
+    background-image: url("./images/background.png");
 }
 
 #level-editor-open-list {
@@ -109,38 +109,28 @@ body{
 }
 
 .powerup{
-
     width: 30px;
     height: 30px;
     border-radius: 50%;
     position: absolute;
     border: 1px outset #FFF;
-
 }
 
 .powerup-0{
-
     border: 1px outset #FFF;
-
 }
 
 .powerup-1{
-
     border: 1px outset #F0F;
     background-image: url(./images/super_strength.png);
-
 }
 
 .powerup-2{
-
     border: 1px outset #00F;
     background-image: url(./images/solid_floor.png);
-
 }
 
 .powerup-3{
-
     border: 1px outset #0FF;
     background-image: url(./images/big_paddle.png);
-
 }
