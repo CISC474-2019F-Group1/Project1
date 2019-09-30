@@ -93,17 +93,17 @@ class Ball {
                 this.radius = 10;
                 gameState.endPowerUp();
                 if (gameState.getGameMode() != "ZenMode") { gameState.decrementLives(); }
+                // Lose state
                 if (gameState.getLives() < 1) {
                     if (gameState.getGameMode() == "NormalMode") {
-                        gameState.decrementScoreBy(gameState.getScore());
                         for (let i: number = 0; i < 3; i++) { gameState.incrementLives(); }
                     } else if (gameState.getGameMode() == "HardCoreMode") {
-                        gameState.decrementScoreBy(gameState.getScore());
                         gameState.incrementLives();
                     }
+                    gameState.decrementScoreBy(gameState.getScore());
+                    location.reload();
                 }
             }
-            return;
         }
 
         // Collide paddle
