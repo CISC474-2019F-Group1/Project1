@@ -4,6 +4,8 @@ class GameState {
     level: number;
     activePowerUp: Powerup;
     gameMode: string;
+    timer: number;
+    solidFloor: boolean;
     
     constructor(score: number,
                 lives: number,
@@ -15,10 +17,31 @@ class GameState {
         this.level = level;
         this.lives = lives;
         this.gameMode = gameMode;
+        this.timer = 0;
+        this.solidFloor = false;
     }
 
     setGameMode(str:string) {
         this.gameMode = str;
+    }
+
+    setPowerup(p:Powerup){
+
+        this.activePowerUp = p;
+        clearTimeout(this.timer);
+        this.timer = setTimeout(this.endPowerUp, p.getDuration()*1000);
+
+    }
+
+    endPowerUp(){
+
+        this.activePowerUp = new Powerup(0,0);
+        console.log("Cleared powerup");
+
+    }
+
+    setFloor(sf: boolean){
+        this.solidFloor = sf;
     }
 
     decrementScoreBy(num:number) {
@@ -48,5 +71,13 @@ class GameState {
 
     getGameMode() {
         return this.gameMode;
+    }
+
+    getPowerup(){
+        return this.activePowerUp;
+    }
+
+    getFloor(){
+        return this.solidFloor; 
     }
 }

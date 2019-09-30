@@ -67,7 +67,7 @@ function clearBoard() {
 }
 
 function initNormalMode() {
-    powerUp = new Powerup(0,0);
+    powerUp = new Powerup(0,15);
     gameState = new GameState(0, 3, 0, powerUp, gameMode);
     board = new Board(0, BOARD_WIDTH, BOARD_HEIGHT, 0);
     paddle = new Paddle(BOARD_WIDTH / 2, 10, 200, 20, 5, board.getRightEdgeX());
@@ -77,7 +77,8 @@ function initNormalMode() {
         for (let i: number = 0; i < 10; i++) {
             let x: number = (i * BRICK_WIDTH) + (BRICK_WIDTH / 2);
             let y: number = BOARD_HEIGHT - (j * BRICK_HEIGHT) - (BRICK_HEIGHT / 2);
-            bricks.set(brickSeq, new Brick(x, y, BRICK_WIDTH, BRICK_HEIGHT, 3, x, y, powerUp));
+            let r: number = Math.ceil(Math.random() * 3);
+            bricks.set(brickSeq, new Brick(x, y, BRICK_WIDTH, BRICK_HEIGHT, 3, x, y, new Powerup(r,3)));
             brickSeq++;
         }
     }
@@ -297,6 +298,7 @@ let lastFrameTimeMs: number = 0;
 let maxFPS: number = 120;
 let delta: number = 0;
 let timestep: number = 1000 / 120;
+let bStrength: number = 1;
 
 function update(delta: number) {
     // Comment this line if you play by yourself
@@ -317,17 +319,44 @@ function update(delta: number) {
                 document.querySelector<HTMLElement>("#hints")!.innerHTML = "";
             }
         }
-        ball.moveAndCollide(gameState, bricks, board, paddle, delta);
+
+        // Check for powerups
+        let activePowerup = gameState.getPowerup().getPid();
+        switch(activePowerup){
+
+            case 1: // Super strength
+                bStrength = 3;
+                paddle.setWidth(200);
+                document.querySelector<HTMLElement>("#hints")!.innerHTML = "Super strength";
+                gameState.setFloor(false);
+                break;
+            case 2: // Solid floor
+                bStrength = 1;
+                paddle.setWidth(200);
+                document.querySelector<HTMLElement>("#hints")!.innerHTML = "Solid floor";
+                gameState.setFloor(true);
+                break;
+            case 3: // Big paddle
+                bStrength = 1;
+                paddle.setWidth(400);
+                document.querySelector<HTMLElement>("#hints")!.innerHTML = "Big paddle";
+                gameState.setFloor(false);
+                break;
+            default: // No powerup
+                bStrength = 1;
+                paddle.setWidth(200);
+                gameState.setFloor(false);
+                break;
+
+        }
+
+        ball.moveAndCollide(gameState, bricks, board, paddle, delta, bStrength);
         for (const [i, brick] of bricks) {
             brick.updateBrick();
-            // Create powerup if one was in brick
+            // Apply powerup if one was in brick
             if(brick.strength == 0){
-                $('#powerup-container').append('<div id="powerup-' + i + '" class="powerup powerup-' + brick.powerup.getPid() + '"></div>');
+                gameState.setPowerup(brick.getPowerup());
                 brick.strength = -1;
-            }
-            // Update all powerups
-            if(brick.strength < 0){
-                brick.powerup.updatePowerup();
             }
         }
     };
@@ -355,7 +384,7 @@ function drawLevelEditor() {
                "bottom": (ghostBrick.getBottomY() * scale) + yOffset,
                "width": ghostBrick.getWidth() * scale,
                "height": ghostBrick.getHeight() * scale })
-        .attr('class', 'brick strength-' + ghostBrick.getStrength());
+        .attr('class', 'brick strength-' + ghostBrick.getStrength() + " powerup-" + ghostBrick.getPowerup().getPid());
     
     for (const [i, brick] of bricks) {
         $('#brick-' + i)
@@ -363,7 +392,7 @@ function drawLevelEditor() {
                    "bottom": (brick.getBottomY() * scale) + yOffset,
                    "width": brick.getWidth() * scale,
                    "height": brick.getHeight() * scale })
-            .attr('class', 'brick strength-' + brick.getStrength());
+            .attr('class', 'brick strength-' + brick.getStrength() + " powerup-" + brick.getPowerup().getPid());
     }
 }
 
@@ -398,7 +427,7 @@ function drawGame() {
                        "bottom": (brick.getBottomY() * scale) + yOffset,
                        "width": brick.getWidth() * scale,
                        "height": brick.getHeight() * scale })
-                .attr('class', 'brick strength-' + brick.getStrength());
+                .attr('class', 'brick strength-' + brick.getStrength() + " powerup-" + brick.getPowerup().getPid());
         }
     }
 }

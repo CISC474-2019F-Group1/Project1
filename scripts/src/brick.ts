@@ -27,11 +27,8 @@ class Brick extends Rectangle {
         this.powerup = p;
     }
     
-    decrementStrength() {
-        this.strength -= 1;
-        if((this.strength == 0) && (this.powerup != null)){
-            this.powerup.place(this.x,this.y);
-        }
+    decrementStrength(amt: number) {
+        this.strength -= amt;
     }
     
     getStrength() {

@@ -37,7 +37,7 @@ class Ball {
         return this.radius;
     }
     
-    moveAndCollide(gameState: GameState, bricks: Map<number, Brick>, board: Board, paddle: Paddle, delta: number) {
+    moveAndCollide(gameState: GameState, bricks: Map<number, Brick>, board: Board, paddle: Paddle, delta: number, ballStrength:number) {
         let prevX: number = this.x;
         let prevY: number = this.y;
         
@@ -66,7 +66,7 @@ class Ball {
                 }
                 
                 // Lower strength of brick
-                brick.decrementStrength();
+                brick.decrementStrength(ballStrength);
                 if (brick.getStrength() < 1) { 
                     gameState.incrementScoreBy(5);
                 } else if (brick.getStrength() == 1) {
@@ -98,18 +98,28 @@ class Ball {
             this.vy = -this.vy;
             return;
         } else if (this.y - board.getBottomEdgeY() < this.radius) {
-            // Move back to original position
-            this.x = BOARD_WIDTH / 2;
-            this.y = 100;
-            this.vx = 0; 
-            this.vy = 0;
-            this.radius = 10;
-            gameState.decrementLives();
-            if (gameState.getLives() < 1) {
-                gameState.decrementScoreBy(gameState.getScore());
-                for (let i:number = 0; i<3; i++) { gameState.incrementLives(); }
+            if(gameState.getFloor()){
+                // If there is a solid floor, just bounce
+                this.x = prevX;
+                this.y = prevY;
+
+                this.vy = -this.vy;
+            }else{
+                // Move back to original position
+                this.x = BOARD_WIDTH / 2;
+                this.y = 100;
+                this.vx = 0; 
+                this.vy = 0;
+                this.radius = 10;
+                gameState.endPowerUp();
+                gameState.decrementLives();
+                if (gameState.getLives() < 1) {
+                    gameState.decrementScoreBy(gameState.getScore());
+                    for (let i:number = 0; i<3; i++) { gameState.incrementLives(); }
+                }
+                document.querySelector<HTMLElement>("#hints")!.innerHTML = "Press space to drop the ball";
+                return;
             }
-            return;
         }
         
         // Collide paddle
