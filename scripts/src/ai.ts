@@ -84,14 +84,15 @@ class AI {
     
     // }
     predict(paddle: Paddle, ball: Ball, board:Board) {
-            //approximately linear regression
+            //approximately logistic regression
             let y = 0.33*ball.getX() - 0.297*paddle.getX() + board.getRightEdgeX() *0.00671;
-            if (y>0) {
-                    console.log('prediction',y);
+            let w = 1/(1+Math.E**(-y))
+            if (w>1/2) {
+                    console.log('prediction',y,w);
                     return 'right';      
             }
-            else if (y<0) {
-                    console.log('prediction',y);
+            else if (w<1/2) {
+                    console.log('prediction',y,w);
                     return 'left';
                 }          
         return 'hold';
