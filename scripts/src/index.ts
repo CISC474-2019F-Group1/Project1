@@ -57,6 +57,7 @@ let ball = new Ball(BOARD_WIDTH / 2, 100, 0, 0, 10);
 let gameState = new GameState(0, 0, 0, powerUp, paddle, "");
 let bricks: Map<number, Brick>;
 let brickSeq: number;
+let ai = new AI();
 
 function clearBoard() {
     brickSeq = 0;
@@ -275,18 +276,18 @@ function initLevelEditorMode() {
     });
 }
 
-function computer() {
-    if ((ball.getX() - paddle.getX() - paddle.width * 0.1) > paddle.width * 0.2) {
-        if (paddle.getX() < window.innerWidth - paddle.width) {
-            paddle.updatePosition('right');
-        }
-    }
-    else if ((ball.getX() - paddle.getX() - paddle.width * 0.1) < paddle.width * 0.2) {
-        if (paddle.getX() > 0) {
-            paddle.updatePosition('left');
-        }
-    }
-}
+// function computer() {
+//     if ((ball.getX() - paddle.getX() - paddle.width * 0.1) > paddle.width * 0.2) {
+//         if (paddle.getX() < window.innerWidth - paddle.width) {
+//             paddle.updatePosition('right');
+//         }
+//     }
+//     else if ((ball.getX() - paddle.getX() - paddle.width * 0.1) < paddle.width * 0.2) {
+//         if (paddle.getX() > 0) {
+//             paddle.updatePosition('left');
+//         }
+//     }
+// }
 
 let lastFrameTimeMs: number = 0;
 let maxFPS: number = 120;
@@ -297,8 +298,12 @@ let bStrength: number = 1;
 function update(delta: number) {
     if (gameStart && gameState.getGameMode() != "LevelEditor") {
         if (gameState.getGameMode() == 'AILab') {
-            console.log('AI Running');
-            computer();
+            // console.log('AI Running');
+            // computer();
+            ai.save_data(paddle,ball,gameState); 
+            let predict: string = ai.predict(paddle,ball,board);
+            paddle.updatePosition(predict);
+
         }
         if (keysPressed.has('left') && !keysPressed.has('right')) {
             paddle.updatePosition('left');
