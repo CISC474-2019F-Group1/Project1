@@ -46,7 +46,7 @@ class Ball {
                 }
 
                 // Lower strength of brick
-                brick.decrementStrengthBy(1);
+                brick.decrementStrengthBy(ballStrength);
                 // Give points for destroying brick
                 if (brick.getStrength() < 1) {
                     gameState.incrementScoreBy(5);

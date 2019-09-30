@@ -71,7 +71,10 @@ function initNormalMode() {
         for (let i: number = 0; i < 10; i++) {
             let x: number = (i * BRICK_WIDTH) + (BRICK_WIDTH / 2);
             let y: number = BOARD_HEIGHT - (j * BRICK_HEIGHT) - (BRICK_HEIGHT / 2);
-            let r: number = Math.ceil(Math.random() * 3);
+            let r: number = Math.ceil(Math.random() * 25);
+            if(r > 3){
+                r = 0;
+            }
             bricks.set(brickSeq, new Brick(x, y, BRICK_WIDTH, BRICK_HEIGHT, x, y, 3, new PowerUp(r,3)));
             brickSeq++;
         }
@@ -368,7 +371,9 @@ function update(delta: number) {
             brick.updateBrick();
             // Apply powerup if one was in brick
             if(brick.strength == 0){
-                gameState.setPowerup(brick.getPowerUp());
+                if(brick.getPowerUp().getPid() != 0){
+                    gameState.setPowerup(brick.getPowerUp());
+                }
                 brick.strength = -1;
             }
         }

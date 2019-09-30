@@ -56,9 +56,7 @@ class GameState {
     }
 
     setPowerup(p:PowerUp) {
-        clearTimeout(this.timer);
         this.activePowerUp = p;
-        this.timer = setTimeout(this.endPowerUp, p.getDuration()*1000);
     }
 
     setFloor(sf: boolean) { this.solidFloor = sf }
