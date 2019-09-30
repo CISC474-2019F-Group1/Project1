@@ -67,9 +67,11 @@ let ball = new Ball(BOARD_WIDTH / 2, 100, 0, 0, 10);
 let bricks: Brick[] = [];
 for (let j: number = 0; j < 10; j++) {
     for (let i: number = 0; i < 10; i++) {
+        if(i% getRndInteger(0,4) === 0 && j% getRndInteger(0,4) ===0){
         let x: number = (i * BRICK_WIDTH) + (BRICK_WIDTH / 2);
         let y: number = BOARD_HEIGHT - (j * BRICK_HEIGHT) - (BRICK_HEIGHT / 2);
         bricks.push(new Brick(x, y, BRICK_WIDTH, BRICK_HEIGHT, 3));
+        }
     }
 }
 let bricksJSON = JSON.stringify(bricks);
@@ -136,18 +138,22 @@ function draw() {
                      "height": (ball.getRadius() * 2) * scale,
                      "width": (ball.getRadius() * 2) * scale });
                      
-    for (let i: number = 0; i < bricks.length; i++) {
-        $('#brick-' + i)
-            .css({ "left": (bricks[i].getLeftX() * scale) + xOffset,
-                   "bottom": (bricks[i].getBottomY() * scale) + yOffset,
-                   "width": bricks[i].getWidth() * scale,
-                   "height": bricks[i].getHeight() * scale })
-            .attr('class', 'brick strength-' + bricks[i].getStrength());
+    for (let i: number = 0; i < bricks.length; i++ ) {
+            $('#brick-' + i)
+                .css({ "left": (bricks[i].getLeftX() * scale) + xOffset,
+                    "bottom": (bricks[i].getBottomY() * scale) + yOffset,
+                    "width": bricks[i].getWidth() * scale,
+                    "height": bricks[i].getHeight() * scale })
+                .attr('class', 'brick strength-' + bricks[i].getStrength());
     }
 }
 
 function panic() {
     delta = 0;
+}
+
+function getRndInteger(min: number, max: number ) {
+    return Math.floor(Math.random() * (max - min) ) + min;
 }
 
 function mainLoop(timestamp: number) {
