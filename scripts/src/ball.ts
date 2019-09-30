@@ -96,11 +96,12 @@ class Ball {
                 // Lose state
                 if (gameState.getLives() < 1) {
                     if (gameState.getGameMode() == "NormalMode") {
+                        gameState.decrementScoreBy(gameState.getScore());
                         for (let i: number = 0; i < 3; i++) { gameState.incrementLives(); }
                     } else if (gameState.getGameMode() == "HardCoreMode") {
+                        gameState.decrementScoreBy(gameState.getScore());
                         gameState.incrementLives();
                     }
-                    gameState.decrementScoreBy(gameState.getScore());
                     if (gameState.getGameMode() != "ZenMode") { location.reload(); }
                 }
             }
