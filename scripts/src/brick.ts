@@ -62,15 +62,19 @@ class Brick extends Rectangle {
         this.strength = strength;
     }
     
+    setPowerUp(powerup: PowerUp) {
+        this.powerup = powerup;
+    }
+    
     clone() {
         return new Brick(
             super.getX(), 
             super.getY(), 
             super.getWidth(), 
             super.getHeight(), 
-            this.getStrength(),
             this.getEndX(),
             this.getEndY(),
+            this.getStrength(),
             this.getPowerUp());
     }
     

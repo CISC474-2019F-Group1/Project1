@@ -42,5 +42,9 @@ class PowerUp {
     getDuration(){
         return this.duration;
     }
+    
+    clone() {
+        return new PowerUp(this.getPid(), this.getDuration());
+    }
 
 }

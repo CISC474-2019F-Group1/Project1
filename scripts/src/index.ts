@@ -125,6 +125,7 @@ function initNormalMode() {
 
 let gridEnabled: boolean;
 let ghostBrick: Brick;
+let ghostPowerup: PowerUp;
 
 function placeGhostBrick(screenX: number, screenY: number, ghostBrick: Brick) {
     // Calculate board scaling and offset
@@ -168,7 +169,8 @@ function getBrickIdAt(x: number, y: number) {
 
 function initLevelEditorMode() {
     gridEnabled = true;
-    ghostBrick = new Brick(0, 0, BRICK_WIDTH, BRICK_HEIGHT, 3, 0, 0, new PowerUp(0, 0));
+    ghostBrick = new Brick(0, 0, BRICK_WIDTH, BRICK_HEIGHT, 0, 0, 3, new PowerUp(0, 3));
+    ghostPowerup = new PowerUp(1, 3);
     clearBoard();
 
     $(document).off("keydown");
@@ -228,17 +230,42 @@ function initLevelEditorMode() {
     });
     $("#brick-container").on("click", function (event) {
         let brickId = getBrickIdAt(ghostBrick.getX(), ghostBrick.getY());
-        if (brickId < 0) {
-            bricks.set(brickSeq, ghostBrick.clone());
-            $('#brick-container').append('<div id="brick-' + brickSeq + '"></div>');
-            brickSeq++;
-        } else {
-            bricks.delete(brickId);
-            $('#brick-' + brickId).remove();
+        if (event.ctrlKey) { 
+            // place or remove powerup
+            if (brickId >= 0) {
+                let brick = bricks.get(brickId);
+                if (brick != undefined) {
+                    if (brick.getPowerUp().getPid() == 0) {
+                        brick.setPowerUp(ghostPowerup.clone());
+                    } else {
+                        brick.setPowerUp(new PowerUp(0, 3));
+                    }
+                }
+            }
+        } else { 
+            // place or remove brick
+            if (brickId < 0) {
+                bricks.set(brickSeq, ghostBrick.clone());
+                $('#brick-container').append('<div id="brick-' + brickSeq + '"></div>');
+                brickSeq++;
+            } else {
+                bricks.delete(brickId);
+                $('#brick-' + brickId).remove();
+            }
         }
     });
     $("#level-editor-brick-strength ul li a").on("click", function (event) {
         ghostBrick.setStrength(parseInt(event.target.innerText));
+    });
+    $("#level-editor-powerup-type ul li a").on("click", function (event) {
+        let powerupType = event.target.innerText;
+        if (powerupType == "Instant break") {
+            ghostPowerup = new PowerUp(1, 3);
+        } else if (powerupType == "Forcefield") {
+            ghostPowerup = new PowerUp(2, 3);
+        } else if (powerupType == "Extended paddle") {
+            ghostPowerup = new PowerUp(3, 3);
+        }
     });
     $("#level-editor-save-confirm").on("click", function (event) {
         if (typeof (Storage) !== "undefined") {
@@ -259,9 +286,11 @@ function initLevelEditorMode() {
                 return false;
             } else {
                 let bricksArray = <any[]>JSON.parse(bricksJSON);
+                console.log(bricksArray);
                 clearBoard();
                 for (let brick of bricksArray) {
-                    bricks.set(brickSeq, new Brick(brick.x, brick.y, brick.width, brick.height, brick.strength, brick.x, brick.y, new PowerUp(0, 0)));
+                    let powerup = new PowerUp(brick.powerup.pid, brick.powerup.duration);
+                    bricks.set(brickSeq, new Brick(brick.x, brick.y, brick.width, brick.height, brick.x, brick.y, brick.strength, powerup));
                     $('#brick-container').append('<div id="brick-' + brickSeq + '"></div>');
                     brickSeq++;
                 }
