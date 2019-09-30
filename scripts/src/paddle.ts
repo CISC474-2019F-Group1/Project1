@@ -20,8 +20,8 @@ class Paddle extends Rectangle {
         }
     }
 
-    setWidth(width: number) {
-        this.width = width;
+    setWidthMultBy(scale: number) {
+        this.width = Math.floor(scale * this.width);
         $('#paddle').css("width", this.width);
     }
 

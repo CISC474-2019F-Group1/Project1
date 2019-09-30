@@ -1,5 +1,4 @@
-let gameStart = false
-let gameMode = "";
+let gameStart = false;
 
 $(document).ready(function () {
     $('#game-header-bar').hide();
@@ -10,31 +9,30 @@ $(document).ready(function () {
 
     $('#chooseGame').modal({ backdrop: 'static', keyboard: false });
     $('#normalMode').click(function () {
-        initNormalMode();
+        gameState.setGameMode("NormalMode");
         gameStart = true;
-        gameMode = "NormalMode";
+        initNormalMode();
     })
     $('#zenMode').click(function () {
-        initNormalMode();
+        gameState.setGameMode("ZenMode");
         gameStart = true;
-        gameMode = "ZenMode";
+        initNormalMode();
     })
     $('#hardCore').click(function () {
-        initNormalMode();
+        gameState.setGameMode("HardCoreMode");
         gameStart = true;
-        gameMode = "HardCoreMode";
+        initNormalMode();
     })
     $('#aiLab').click(function () {
-        initNormalMode();
+        gameState.setGameMode("AILab");
         gameStart = true;
-        gameMode = "aiLab";
+        initNormalMode();
     })
     $('#levelEditor').click(function () {
-        initLevelEditorMode();
+        gameState.setGameMode("LevelEditor");
         gameStart = true;
-        gameMode = "LevelEditor";
+        initLevelEditorMode();
     })
-    console.log('Game Mode: ' + gameMode);
 });
 
 $("input[type='text']").on("keydown", function (event) {
@@ -52,13 +50,13 @@ const BRICK_HEIGHT = BRICK_WIDTH / 2;
 
 let keysPressed: Set<string> = new Set();
 
-let powerUp: PowerUp;
-let gameState: GameState;
-let board: Board;
-let paddle: Paddle;
-let ball: Ball;
-let brickSeq: number;
+let powerUp = new PowerUp(0, 0);
+let board = new Board(0, BOARD_WIDTH, BOARD_HEIGHT, 0);
+let paddle = new Paddle(BOARD_WIDTH / 2, 10, 200, 20, 5, board.getRightEdgeX());
+let ball = new Ball(BOARD_WIDTH / 2, 100, 0, 0, 10);
+let gameState = new GameState(0, 0, 0, powerUp, paddle, "");
 let bricks: Map<number, Brick>;
+let brickSeq: number;
 
 function clearBoard() {
     brickSeq = 0;
@@ -67,18 +65,14 @@ function clearBoard() {
 }
 
 function initNormalMode() {
-    powerUp = new PowerUp(0,15);
-    gameState = new GameState(0, 3, 0, powerUp, gameMode);
-    board = new Board(0, BOARD_WIDTH, BOARD_HEIGHT, 0);
-    paddle = new Paddle(BOARD_WIDTH / 2, 10, 200, 20, 5, board.getRightEdgeX());
-    ball = new Ball(BOARD_WIDTH / 2, 100, 0, 0, 10);
     clearBoard();
+    gameState.startGameState();
     for (let j: number = 0; j < 10; j++) {
         for (let i: number = 0; i < 10; i++) {
             let x: number = (i * BRICK_WIDTH) + (BRICK_WIDTH / 2);
             let y: number = BOARD_HEIGHT - (j * BRICK_HEIGHT) - (BRICK_HEIGHT / 2);
             let r: number = Math.ceil(Math.random() * 3);
-            bricks.set(brickSeq, new Brick(x, y, BRICK_WIDTH, BRICK_HEIGHT, 3, x, y, new PowerUp(r,3)));
+            bricks.set(brickSeq, new Brick(x, y, BRICK_WIDTH, BRICK_HEIGHT, x, y, 3, new PowerUp(r,3)));
             brickSeq++;
         }
     }
@@ -301,9 +295,9 @@ let timestep: number = 1000 / 120;
 let bStrength: number = 1;
 
 function update(delta: number) {
-    if (gameStart && gameMode != "LevelEditor") {
-        if (gameMode == 'AILAB') {
-            console.log('ai running');
+    if (gameStart && gameState.getGameMode() != "LevelEditor") {
+        if (gameState.getGameMode() == 'AILab') {
+            console.log('AI Running');
             computer();
         }
         if (keysPressed.has('left') && !keysPressed.has('right')) {
@@ -311,33 +305,31 @@ function update(delta: number) {
         } else if (keysPressed.has('right') && !keysPressed.has('left')) {
             paddle.updatePosition('right');
         } else if (ball.getVY() == 0) {
-            document.querySelector<HTMLElement>("#hints")!.innerHTML = "Press space to drop the ball";
+            $("#hints").text("Press space to drop the ball");
             if (keysPressed.has('space') && !keysPressed.has('right') && !keysPressed.has('left')) {
                 ball.setVY(-.4);
-                document.querySelector<HTMLElement>("#hints")!.innerHTML = "";
+                $("#hints").text("");
             }
         }
-
         // Check for powerups
-        let activePowerup = gameState.getPowerup().getPid();
-        switch(activePowerup){
-
+        let activePowerup = gameState.getPowerUp().getPid();
+        switch(activePowerup) {
             case 1: // Super strength
                 bStrength = 3;
                 paddle.setWidth(200);
-                document.querySelector<HTMLElement>("#hints")!.innerHTML = "Super strength";
+                $("#hints").text("Super Strength");
                 gameState.setFloor(false);
                 break;
             case 2: // Solid floor
                 bStrength = 1;
                 paddle.setWidth(200);
-                document.querySelector<HTMLElement>("#hints")!.innerHTML = "Solid floor";
+                $("#hints").text("Solid Floor");
                 gameState.setFloor(true);
                 break;
             case 3: // Big paddle
                 bStrength = 1;
                 paddle.setWidth(400);
-                document.querySelector<HTMLElement>("#hints")!.innerHTML = "Big paddle";
+                $("#hints").text("Big Paddle");
                 gameState.setFloor(false);
                 break;
             default: // No powerup
@@ -345,15 +337,14 @@ function update(delta: number) {
                 paddle.setWidth(200);
                 gameState.setFloor(false);
                 break;
-
         }
-
         ball.moveAndCollide(gameState, bricks, board, paddle, delta, bStrength);
+        gameState.updateGameState();
         for (const [i, brick] of bricks) {
             brick.updateBrick();
             // Apply powerup if one was in brick
             if(brick.strength == 0){
-                gameState.setPowerup(brick.getPowerup());
+                gameState.setPowerup(brick.getPowerUp());
                 brick.strength = -1;
             }
         }
@@ -386,7 +377,7 @@ function drawLevelEditor() {
                "bottom": (ghostBrick.getBottomY() * scale) + yOffset,
                "width": ghostBrick.getWidth() * scale,
                "height": ghostBrick.getHeight() * scale })
-        .attr('class', 'brick strength-' + ghostBrick.getStrength() + " powerup-" + ghostBrick.getPowerup().getPid());
+        .attr('class', 'brick strength-' + ghostBrick.getStrength() + " powerup-" + ghostBrick.getPowerUp().getPid());
     
     for (const [i, brick] of bricks) {
         $('#brick-' + i)
@@ -394,7 +385,7 @@ function drawLevelEditor() {
                    "bottom": (brick.getBottomY() * scale) + yOffset,
                    "width": brick.getWidth() * scale,
                    "height": brick.getHeight() * scale })
-            .attr('class', 'brick strength-' + brick.getStrength() + " powerup-" + brick.getPowerup().getPid());
+            .attr('class', 'brick strength-' + brick.getStrength() + " powerup-" + brick.getPowerUp().getPid());
     }
 }
 
@@ -435,13 +426,13 @@ function drawGame() {
                        "bottom": (brick.getBottomY() * scale) + yOffset,
                        "width": brick.getWidth() * scale,
                        "height": brick.getHeight() * scale })
-                .attr('class', 'brick strength-' + brick.getStrength() + " powerup-" + brick.getPowerup().getPid());
+                .attr('class', 'brick strength-' + brick.getStrength() + " powerup-" + brick.getPowerUp().getPid());
         }
     }
 }
 
 function draw() {
-    if (gameMode == "LevelEditor") {
+    if (gameState.getGameMode() == "LevelEditor") {
         drawLevelEditor();
     } else {
         drawGame();

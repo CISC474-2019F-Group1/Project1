@@ -3,53 +3,66 @@ class GameState {
     lives: number;
     level: number;
     activePowerUp: PowerUp;
+    paddle: Paddle;
     gameMode: string;
     timer: number;
     solidFloor: boolean;
     
-    constructor(score: number,
-                lives: number,
-                level: number,
-                activePowerUp: PowerUp,
-                gameMode: string) {
+    constructor(score: number, lives: number,
+            level: number, activePowerUp: PowerUp,
+            paddle: Paddle, gameMode: string) {
         this.score = score;
         this.activePowerUp = activePowerUp;
         this.level = level;
         this.lives = lives;
         this.gameMode = gameMode;
+        this.paddle = paddle;
         this.timer = 0;
         this.solidFloor = false;
     }
 
-    updateGameState(gameMode: string) {
-        if (gameMode == "normalMode") {
-            $("#lives").text("Lives: " + gameState.getLives());
-            $("#score").text("Score: " + gameState.getScore());
-        } else if (gameMode == "zenMode") {
-            $("#lives").text("Lives: ∞");
-            $("#score").text("Score: " + gameState.getScore());
-        } else if (gameMode == "hardCoreMode") {
+    startGameState() {
+        if (this.gameMode == "NormalMode") {
+            this.lives = 3;
+        } else if (this.gameMode == "HardCoreMode") {
+            this.paddle.setWidthMultBy(.5);
+            this.lives = 1;
+        } else if (this.gameMode == "AILab") {
+
+        } else if (this.gameMode == "LevelEditor") {
+
         }
     }
 
-    setPowerup(p:PowerUp){
+    updateGameState() {
+        if (this.gameMode == "NormalMode") {
+            $("#lives").text("Lives: " + this.lives);
+            $("#score").text("Score: " + this.score);
+        } else if (this.gameMode == "ZenMode") {
+            $("#lives").text("Lives: ∞");
+            $("#score").text("Score: " + this.score);
+        } else if (this.gameMode == "HardCoreMode") {
+            $("#lives").text("Lives: " + this.lives);
+            $("#score").text("Score: " + this.score);
+        } else if (this.gameMode == "AILab") {
 
-        this.activePowerUp = p;
-        clearTimeout(this.timer);
-        this.timer = setTimeout(this.endPowerUp, p.getDuration()*1000);
-
+        } else if (this.gameMode == "LevelEditor") {
+        
+        }
     }
 
-    endPowerUp(){
-
+    endPowerUp() {
         this.activePowerUp = new PowerUp(0,0);
-        console.log("Cleared powerup");
-
+        console.log("Cleared PowerUp");
     }
 
-    setFloor(sf: boolean){
-        this.solidFloor = sf;
+    setPowerup(p:PowerUp) {
+        clearTimeout(this.timer);
+        this.activePowerUp = p;
+        this.timer = setTimeout(this.endPowerUp, p.getDuration()*1000);
     }
+
+    setFloor(sf: boolean) { this.solidFloor = sf }
 
     setGameMode(str: string) { this.gameMode = str }
 
@@ -57,16 +70,13 @@ class GameState {
 
     incrementScoreBy(num: number) { this.score += num }
 
-    getPowerup(){
-        return this.activePowerUp;
-    }
-
-    getFloor(){
-        return this.solidFloor; 
-    }
     decrementLives() { this.lives -= 1 }
 
     incrementLives() { this.lives += 1 }
+
+    getPowerUp(){ return this.activePowerUp }
+
+    getFloor(){ return this.solidFloor }
 
     getScore() { return this.score }
 

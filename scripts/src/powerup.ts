@@ -21,7 +21,6 @@ class PowerUp {
         this.x = 0;
         this.y = 0;
         this.radius = 15;
-
     }
 
     getX(){
