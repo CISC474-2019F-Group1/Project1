@@ -15,9 +15,9 @@ $(document).ready(function () {
         gameMode = "NormalMode";
     })
     $('#zenMode').click(function () {
-        initNormalMode();
+        initZenMode();
         gameStart = true;
-        gameMode = "ZenMode";
+        gameMode = "zenMode";
     })
     $('#hardCore').click(function () {
         initNormalMode();
@@ -73,17 +73,78 @@ function initNormalMode() {
     paddle = new Paddle(BOARD_WIDTH / 2, 10, 200, 20, 5, board.getRightEdgeX());
     ball = new Ball(BOARD_WIDTH / 2, 100, 0, 0, 10);
     clearBoard();
-    for (let j: number = 0; j < 10; j++) {
+    fillBoard();
+
+    $(document).off("keydown");
+    $(document).off("keyup");
+    $(document).on("keydown", function (event) {
+        if (gameStart) {
+            if (event.key == 'ArrowLeft') {
+                keysPressed.add('left');
+            } else if (event.key == 'ArrowRight') {
+                keysPressed.add('right');
+            } else if (event.key == ' ') {
+                keysPressed.add('space');
+            }
+        }
+    });
+    $(document).on("keyup", function (event) {
+        if (gameStart) {
+            if (event.key == 'ArrowLeft') {
+                keysPressed.delete('left');
+            } else if (event.key == 'ArrowRight') {
+                keysPressed.delete('right');
+            } else if (event.key == ' ') {
+                keysPressed.delete('space');
+            }
+        }
+    });
+
+    $('#game-header-bar').show();
+    $('#level-editor-header-bar').hide();
+    $('#paddle').show();
+    $('#ball').show();
+    $('#brick-container').show();
+    $('#game-container').show();
+    $('#brick-container').css("background", "#3330");
+    $("#brick-container").off("mousemove");
+    $('#level-editor-ghost-brick').hide();
+}
+
+function areAllBricksBroke(){
+    bricks.forEach(function(el){
+        if(el.getStrength() !== 0 ){
+            return false;
+        }
+    })
+    return true;
+}
+
+function fillBoard(){
+    for (let j: number = 0; j < 8; j++) {
         for (let i: number = 0; i < 10; i++) {
             let x: number = (i * BRICK_WIDTH) + (BRICK_WIDTH / 2);
             let y: number = BOARD_HEIGHT - (j * BRICK_HEIGHT) - (BRICK_HEIGHT / 2);
-            bricks.set(brickSeq, new Brick(x, y, BRICK_WIDTH, BRICK_HEIGHT,  x, y, 3, powerUp));
+            bricks.set(brickSeq, new Brick(x, y, BRICK_WIDTH, BRICK_HEIGHT,  x, y, getRndInteger(0,4), powerUp));
             brickSeq++;
         }
     }
     for (const [i, brick] of bricks) {
         $('#brick-container').append('<div id="brick-' + i + '"></div>');
     }
+        
+}
+
+function initZenMode() {
+    powerUp = new PowerUp(0, 0);
+    gameState = new GameState(0, 3, 0, powerUp, gameMode);
+    board = new Board(0, BOARD_WIDTH, BOARD_HEIGHT, 0);
+    paddle = new Paddle(BOARD_WIDTH / 2, 10, 200, 20, 5, board.getRightEdgeX());
+    ball = new Ball(BOARD_WIDTH / 2, 100, 0, 0, 10);
+    clearBoard();
+    fillBoard();
+
+
 
     $(document).off("keydown");
     $(document).off("keyup");
@@ -322,11 +383,15 @@ function update(delta: number) {
             if (brick.strength == 0) {
                 $('#powerup-container').append('<div id="powerup-' + i + '" class="powerup powerup-' + brick.powerup.getPid() + '"></div>');
                 brick.strength = -1;
+                
             }
             // Update all powerups
             if (brick.strength < 0) {
                 brick.powerup.updatePowerUp();
             }
+        }
+        if(bricks.size === 0){
+            fillBoard()
         }
     }
 }
@@ -413,6 +478,10 @@ function drawGame() {
                     "height": brick.getHeight() * scale
                 })
                 .attr('class', 'brick strength-' + brick.getStrength());
+
+            if(brick.getStrength() === -1){
+                bricks.delete(i);
+            }
         }
     }
 }
@@ -451,6 +520,8 @@ function mainLoop(timestamp: number) {
             break;
         }
     }
+
+
     draw();
     requestAnimationFrame(mainLoop);
 }

@@ -77,7 +77,6 @@ body{
     margin: 0px;
     padding: 0px;
     box-sizing: border-box;
-    border: 1px outset #ffffff;
     pointer-events:none;
 }
 
@@ -86,17 +85,19 @@ body{
 }
 
 .strength-1{
-    background-color: #F00;
+    
+    background-color: #00F;
     border: 1px outset #FFF;
 }
 
 .strength-2{
-    background-color: #FF0;
+    background-color: #F0F;
+    
     border: 1px outset #FFF;
 }
 
 .strength-3{
-    background-color: #0F0;
+    background-color: #0FF;
     border: 1px outset #FFF;
 }
 
@@ -110,19 +111,18 @@ body{
 }
 
 .powerup-1{
-
-    background-color: #F0F;
+    background-color: #0F0;
+    
 
 }
 
 .powerup-2{
-
-    background-color: #00F;
+    background-color: #F00;
+    
 
 }
 
 .powerup-3{
-
-    background-color: #0FF;
+    background-color: #FF0;
 
 }
