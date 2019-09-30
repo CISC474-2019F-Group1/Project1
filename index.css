@@ -78,7 +78,7 @@ body{
     padding: 0px;
     box-sizing: border-box;
     border: none;
-    pointer-events:none;
+    pointer-events: none;
     background-size: 50% auto;
     background-position: center center;
     background-repeat: no-repeat;
@@ -101,15 +101,18 @@ body{
 }
 
 .strength-1{
-    background-color: #F00;
+    background-color: #00F;
+    border: 1px outset #FFF;
 }
 
 .strength-2{
-    background-color: #FF0;
+    background-color: #F0F;
+    border: 1px outset #FFF;
 }
 
 .strength-3{
-    background-color: #0F0;
+    background-color: #0FF;
+    border: 1px outset #FFF;
 }
 
 .powerup{

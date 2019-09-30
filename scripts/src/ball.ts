@@ -78,7 +78,7 @@ class Ball {
             this.vy = -this.vy;
             return;
         } else if (this.y - board.getBottomEdgeY() < this.radius) {
-            if(gameState.getFloor()) {
+            if (gameState.getFloor()) {
                 // If there is a solid floor, just bounce
                 this.x = prevX;
                 this.y = prevY;
@@ -96,11 +96,12 @@ class Ball {
                 // Lose state
                 if (gameState.getLives() < 1) {
                     if (gameState.getGameMode() == "NormalMode") {
+                        gameState.decrementScoreBy(gameState.getScore());
                         for (let i: number = 0; i < 3; i++) { gameState.incrementLives(); }
                     } else if (gameState.getGameMode() == "HardCoreMode") {
+                        gameState.decrementScoreBy(gameState.getScore());
                         gameState.incrementLives();
                     }
-                    gameState.decrementScoreBy(gameState.getScore());
                     if (gameState.getGameMode() != "ZenMode") { location.reload(); }
                 }
             }

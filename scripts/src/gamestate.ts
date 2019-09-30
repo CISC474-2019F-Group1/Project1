@@ -55,9 +55,7 @@ class GameState {
         console.log("Cleared PowerUp");
     }
 
-    setPowerup(p:PowerUp) {
-        this.activePowerUp = p;
-    }
+    setPowerup(p:PowerUp) { this.activePowerUp = p }
 
     setFloor(sf: boolean) { this.solidFloor = sf }
 
