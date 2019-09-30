@@ -73,21 +73,7 @@ function initNormalMode() {
     gameState.startGameState();
     keysPressed.clear();
     clearBoard();
-    for (let j: number = 0; j < 10; j++) {
-        for (let i: number = 0; i < 10; i++) {
-            let x: number = (i * BRICK_WIDTH) + (BRICK_WIDTH / 2);
-            let y: number = BOARD_HEIGHT - (j * BRICK_HEIGHT) - (BRICK_HEIGHT / 2);
-            let r: number = Math.ceil(Math.random() * 25);
-            if(r > 3){
-                r = 0;
-            }
-            bricks.set(brickSeq, new Brick(x, y, BRICK_WIDTH, BRICK_HEIGHT, x, y, 3, new PowerUp(r,3)));
-            brickSeq++;
-        }
-    }
-    for (const [i, brick] of bricks) {
-        $('#brick-container').append('<div id="brick-' + i + '"></div>');
-    }
+    fillBoard();
     
     $(document).on("keydown", function (evt) {
         if (gameStart) {
@@ -123,6 +109,25 @@ function initNormalMode() {
     $('#brick-container').css("background", "#3330");
     $("#brick-container").off("mousemove");
     $('#level-editor-ghost-brick').hide();
+}
+
+function fillBoard() {
+    for (let j: number = 0; j < 8; j++) {
+        for (let i: number = 0; i < 10; i++) {
+            let x: number = (i * BRICK_WIDTH) + (BRICK_WIDTH / 2);
+            let y: number = BOARD_HEIGHT - (j * BRICK_HEIGHT) - (BRICK_HEIGHT / 2);
+            let r: number = Math.ceil(Math.random() * 25);
+            if (r > 3) {
+                r = 0;
+            }
+            bricks.set(brickSeq, new Brick(x, y, BRICK_WIDTH, BRICK_HEIGHT, x, y, getRndInteger(1, 4), new PowerUp(r, 3)));
+            brickSeq++;
+        }
+    }
+    for (const [i, brick] of bricks) {
+        $('#brick-container').append('<div id="brick-' + i + '"></div>');
+    }
+
 }
 
 function initCustomLevelMode() {
@@ -247,7 +252,7 @@ function placeGhostBrick(screenX: number, screenY: number, ghostBrick: Brick) {
 }
 
 function getBrickIdAt(x: number, y: number) {
-    // Note: Iterate backwards to prevt counterintuitive selection of rearmost 
+    // Note: Iterate backwards to prevent counterintuitive selection of rearmost 
     // brick when multiple bricks overlap. Frontmost brick should be selected 
     // instead.
     for (const [i, brick] of Array.from(bricks).reverse()) {
@@ -325,7 +330,7 @@ function initLevelEditorMode() {
     $("#brick-container").on("click", function (evt) {
         let brickId = getBrickIdAt(ghostBrick.getX(), ghostBrick.getY());
         if (evt.ctrlKey) { 
-            // place or remove powerup
+            // Place or remove powerup
             if (brickId >= 0) {
                 let brick = bricks.get(brickId);
                 if (brick != undefined) {
@@ -337,7 +342,7 @@ function initLevelEditorMode() {
                 }
             }
         } else { 
-            // place or remove brick
+            // Place or remove brick
             if (brickId < 0) {
                 bricks.set(brickSeq, ghostBrick.clone());
                 $('#brick-container').append('<div id="brick-' + brickSeq + '"></div>');
@@ -405,18 +410,18 @@ function initLevelEditorMode() {
     });
 }
 
-// function computer() {
-//     if ((ball.getX() - paddle.getX() - paddle.width * 0.1) > paddle.width * 0.2) {
-//         if (paddle.getX() < window.innerWidth - paddle.width) {
-//             paddle.updatePosition('right');
-//         }
-//     }
-//     else if ((ball.getX() - paddle.getX() - paddle.width * 0.1) < paddle.width * 0.2) {
-//         if (paddle.getX() > 0) {
-//             paddle.updatePosition('left');
-//         }
-//     }
-// }
+/* function computer() {
+    if ((ball.getX() - paddle.getX() - paddle.width * 0.1) > paddle.width * 0.2) {
+        if (paddle.getX() < window.innerWidth - paddle.width) {
+            paddle.updatePosition('right');
+        }
+    }
+    else if ((ball.getX() - paddle.getX() - paddle.width * 0.1) < paddle.width * 0.2) {
+        if (paddle.getX() > 0) {
+            paddle.updatePosition('left');
+        }
+    }
+} */
 
 let lastFrameTimeMs: number = 0;
 let maxFPS: number = 120;
@@ -496,12 +501,15 @@ function update(delta: number) {
         for (const [i, brick] of bricks) {
             brick.updateBrick();
             // Apply powerup if one was in brick
-            if(brick.strength == 0){
-                if(brick.getPowerUp().getPid() != 0){
+            if (brick.strength == 0) {
+                if (brick.getPowerUp().getPid() != 0) {
                     gameState.setPowerup(brick.getPowerUp());
                 }
                 brick.strength = -1;
             }
+        }
+        if (bricks.size === 0) {
+            fillBoard();
         }
     }
 }
@@ -577,11 +585,16 @@ function drawGame() {
 
         for (const [i, brick] of bricks) {
             $('#brick-' + i)
-                .css({ "left": (brick.getLeftX() * scale) + xOffset,
-                       "bottom": (brick.getBottomY() * scale) + yOffset,
-                       "width": brick.getWidth() * scale,
-                       "height": brick.getHeight() * scale })
+                .css({
+                    "left": (brick.getLeftX() * scale) + xOffset,
+                    "bottom": (brick.getBottomY() * scale) + yOffset,
+                    "width": brick.getWidth() * scale,
+                    "height": brick.getHeight() * scale
+                })
                 .attr('class', 'brick strength-' + brick.getStrength() + " powerup-" + brick.getPowerUp().getPid());
+            if (brick.getStrength() === -1) {
+                bricks.delete(i);
+            }
         }
     }
 }

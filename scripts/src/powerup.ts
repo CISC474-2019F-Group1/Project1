@@ -23,28 +23,16 @@ class PowerUp {
         this.radius = 15;
     }
 
-    getX(){
-        return this.x;
-    }
+    getX() { return this.x }
 
-    getY(){
-        return this.y;
-    }
+    getY() { return this.y }
 
-    getPid(){
-        return this.pid;
-    }
+    getPid(){ return this.pid }
 
-    getState(){
-        return this.state;
-    }
+    getState(){ return this.state }
 
-    getDuration(){
-        return this.duration;
-    }
+    getDuration() { return this.duration }
     
-    clone() {
-        return new PowerUp(this.getPid(), this.getDuration());
-    }
+    clone() { return new PowerUp(this.getPid(), this.getDuration()) }
 
 }

@@ -22,10 +22,6 @@ class Brick extends Rectangle {
         this.speedY = 1;
         this.powerup = p;
     }
-    
-    decrementStrengthBy(amt: number) {
-        this.strength -= amt;
-    }
 
     updateBrick() {
         if (this.speedX > 0) {
@@ -55,15 +51,6 @@ class Brick extends Rectangle {
                 this.speedY = this.speedY * -1;
             }
         }
-
-    }
-    
-    setStrength(strength: number) {
-        this.strength = strength;
-    }
-    
-    setPowerUp(powerup: PowerUp) {
-        this.powerup = powerup;
     }
     
     clone() {
@@ -77,6 +64,12 @@ class Brick extends Rectangle {
             this.getStrength(),
             this.getPowerUp());
     }
+
+    decrementStrengthBy(amt: number) { this.strength -= amt }
+
+    setStrength(strength: number) { this.strength = strength }
+    
+    setPowerUp(powerup: PowerUp) { this.powerup = powerup }
     
     getStrength() { return this.strength }
 
