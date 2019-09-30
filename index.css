@@ -79,6 +79,9 @@ body{
     box-sizing: border-box;
     border: none;
     pointer-events:none;
+    background-size: 50% auto;
+    background-position: center center;
+    background-repeat: no-repeat;
 }
 
 .strength-0{
@@ -124,17 +127,20 @@ body{
 .powerup-1{
 
     border: 1px outset #F0F;
+    background-image: url(./images/super_strength.png);
 
 }
 
 .powerup-2{
 
     border: 1px outset #00F;
+    background-image: url(./images/solid_floor.png);
 
 }
 
 .powerup-3{
 
     border: 1px outset #0FF;
+    background-image: url(./images/big_paddle.png);
 
 }
