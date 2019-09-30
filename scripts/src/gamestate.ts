@@ -2,7 +2,7 @@ class GameState {
     score: number;
     lives: number;
     level: number;
-    activePowerUp: Powerup;
+    activePowerUp: PowerUp;
     gameMode: string;
     timer: number;
     solidFloor: boolean;
@@ -10,7 +10,7 @@ class GameState {
     constructor(score: number,
                 lives: number,
                 level: number,
-                activePowerUp: Powerup,
+                activePowerUp: PowerUp,
                 gameMode: string) {
         this.score = score;
         this.activePowerUp = activePowerUp;
@@ -21,11 +21,18 @@ class GameState {
         this.solidFloor = false;
     }
 
-    setGameMode(str:string) {
-        this.gameMode = str;
+    updateGameState(gameMode: string) {
+        if (gameMode == "normalMode") {
+            $("#lives").text("Lives: " + gameState.getLives());
+            $("#score").text("Score: " + gameState.getScore());
+        } else if (gameMode == "zenMode") {
+            $("#lives").text("Lives: ∞");
+            $("#score").text("Score: " + gameState.getScore());
+        } else if (gameMode == "hardCoreMode") {
+        }
     }
 
-    setPowerup(p:Powerup){
+    setPowerup(p:PowerUp){
 
         this.activePowerUp = p;
         clearTimeout(this.timer);
@@ -35,7 +42,7 @@ class GameState {
 
     endPowerUp(){
 
-        this.activePowerUp = new Powerup(0,0);
+        this.activePowerUp = new PowerUp(0,0);
         console.log("Cleared powerup");
 
     }
@@ -44,34 +51,11 @@ class GameState {
         this.solidFloor = sf;
     }
 
-    decrementScoreBy(num:number) {
-        this.score -= num;
-    }
+    setGameMode(str: string) { this.gameMode = str }
 
-    incrementScoreBy(num:number) {
-        this.score += num;
-    }
+    decrementScoreBy(num: number) { this.score -= num }
 
-    decrementLives() {
-        this.lives -= 1;
-    }
-
-    incrementLives() {
-        this.lives += 1;
-    }
-
-
-    getScore() {
-        return this.score;
-    }
-    
-    getLives() {
-        return this.lives;
-    }
-
-    getGameMode() {
-        return this.gameMode;
-    }
+    incrementScoreBy(num: number) { this.score += num }
 
     getPowerup(){
         return this.activePowerUp;
@@ -80,4 +64,13 @@ class GameState {
     getFloor(){
         return this.solidFloor; 
     }
+    decrementLives() { this.lives -= 1 }
+
+    incrementLives() { this.lives += 1 }
+
+    getScore() { return this.score }
+
+    getLives() { return this.lives }
+
+    getGameMode() { return this.gameMode }
 }

@@ -1,4 +1,4 @@
-class Powerup {
+class PowerUp {
 
     /*
        0 - no powerup
@@ -15,7 +15,6 @@ class Powerup {
     radius: number;
 
     constructor(p: number, d: number) {
-        
         this.pid = p;
         this.duration = d;
         this.state = 'block';

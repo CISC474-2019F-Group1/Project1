@@ -9,15 +9,15 @@ $(document).ready(function () {
     $('#brick-container').hide();
 
     $('#chooseGame').modal({ backdrop: 'static', keyboard: false });
-    $('#zenMode').click(function () {
-        initNormalMode();
-        gameStart = true;
-        gameMode = "ZenMode";
-    })
     $('#normalMode').click(function () {
         initNormalMode();
         gameStart = true;
         gameMode = "NormalMode";
+    })
+    $('#zenMode').click(function () {
+        initNormalMode();
+        gameStart = true;
+        gameMode = "ZenMode";
     })
     $('#hardCore').click(function () {
         initNormalMode();
@@ -27,17 +27,17 @@ $(document).ready(function () {
     $('#aiLab').click(function () {
         initNormalMode();
         gameStart = true;
-        gameMode = "AILAB";
+        gameMode = "aiLab";
     })
     $('#levelEditor').click(function () {
         initLevelEditorMode();
         gameStart = true;
         gameMode = "LevelEditor";
     })
-    console.log('Game Mode: ' + gameStart);
+    console.log('Game Mode: ' + gameMode);
 });
 
-$("input[type='text']").on("keydown", function(event) {
+$("input[type='text']").on("keydown", function (event) {
     event.stopPropagation();
 });
 
@@ -52,7 +52,7 @@ const BRICK_HEIGHT = BRICK_WIDTH / 2;
 
 let keysPressed: Set<string> = new Set();
 
-let powerUp: Powerup;
+let powerUp: PowerUp;
 let gameState: GameState;
 let board: Board;
 let paddle: Paddle;
@@ -67,7 +67,7 @@ function clearBoard() {
 }
 
 function initNormalMode() {
-    powerUp = new Powerup(0,15);
+    powerUp = new PowerUp(0,15);
     gameState = new GameState(0, 3, 0, powerUp, gameMode);
     board = new Board(0, BOARD_WIDTH, BOARD_HEIGHT, 0);
     paddle = new Paddle(BOARD_WIDTH / 2, 10, 200, 20, 5, board.getRightEdgeX());
@@ -78,14 +78,14 @@ function initNormalMode() {
             let x: number = (i * BRICK_WIDTH) + (BRICK_WIDTH / 2);
             let y: number = BOARD_HEIGHT - (j * BRICK_HEIGHT) - (BRICK_HEIGHT / 2);
             let r: number = Math.ceil(Math.random() * 3);
-            bricks.set(brickSeq, new Brick(x, y, BRICK_WIDTH, BRICK_HEIGHT, 3, x, y, new Powerup(r,3)));
+            bricks.set(brickSeq, new Brick(x, y, BRICK_WIDTH, BRICK_HEIGHT, 3, x, y, new PowerUp(r,3)));
             brickSeq++;
         }
     }
     for (const [i, brick] of bricks) {
         $('#brick-container').append('<div id="brick-' + i + '"></div>');
     }
-    
+
     $(document).off("keydown");
     $(document).off("keyup");
     $(document).on("keydown", function (event) {
@@ -107,10 +107,10 @@ function initNormalMode() {
                 keysPressed.delete('right');
             } else if (event.key == ' ') {
                 keysPressed.delete('space');
-            } 
+            }
         }
     });
-    
+
     $('#game-header-bar').show();
     $('#level-editor-header-bar').hide();
     $('#paddle').show();
@@ -127,8 +127,8 @@ let ghostBrick: Brick;
 
 function placeGhostBrick(screenX: number, screenY: number, ghostBrick: Brick) {
     // Calculate board scaling and offset
-    let scale = Math.min(window.innerWidth / BOARD_WIDTH, 
-                         (window.innerHeight - HEADER_HEIGHT) / BOARD_HEIGHT);
+    let scale = Math.min(window.innerWidth / BOARD_WIDTH,
+        (window.innerHeight - HEADER_HEIGHT) / BOARD_HEIGHT);
     let xOffset = (window.innerWidth - (BOARD_WIDTH * scale)) / 2;
     let yOffset = ((window.innerHeight - HEADER_HEIGHT) - (BOARD_HEIGHT * scale)) / 2;
     // Back-transform screen coordinates to board coordinates
@@ -167,7 +167,7 @@ function getBrickIdAt(x: number, y: number) {
 
 function initLevelEditorMode() {
     gridEnabled = true;
-    ghostBrick = new Brick(0, 0, BRICK_WIDTH, BRICK_HEIGHT, 3, 0, 0, new Powerup(0,0));
+    ghostBrick = new Brick(0, 0, BRICK_WIDTH, BRICK_HEIGHT, 3, 0, 0, new PowerUp(0, 0));
     clearBoard();
 
     $(document).off("keydown");
@@ -181,15 +181,15 @@ function initLevelEditorMode() {
             $('#level-editor-open-name').val('');
             $("#level-editor-open-name-group").removeClass("has-error");
             $("#level-editor-open-list").empty();
-            for (var i = 0; i < localStorage.length; i++){
+            for (var i = 0; i < localStorage.length; i++) {
                 let levelName = localStorage.key(i);
                 console.log(levelName);
                 $("#level-editor-open-list").append(
-                    '<button type="button" class="list-group-item list-group-item-action">' 
-                    + levelName 
+                    '<button type="button" class="list-group-item list-group-item-action">'
+                    + levelName
                     + '</button>');
             }
-            $("#level-editor-open-list button").on("click", function(event) {
+            $("#level-editor-open-list button").on("click", function (event) {
                 $('#level-editor-open-name').val(event.target.innerHTML);
             });
         } else if (event.key.toLowerCase() == 's') {
@@ -215,17 +215,17 @@ function initLevelEditorMode() {
     $('#brick-container').show();
     $('#game-container').show();
     $('#brick-container').css("background", "#3337");
-    $('#brick-container').on("mouseenter", function(event) {
+    $('#brick-container').on("mouseenter", function (event) {
         placeGhostBrick(event.pageX, event.pageY, ghostBrick);
         $('#level-editor-ghost-brick').show();
     });
-    $('#brick-container').on("mouseout", function(event) {
+    $('#brick-container').on("mouseout", function (event) {
         $('#level-editor-ghost-brick').hide();
     });
-    $("#brick-container").on("mousemove", function(event) {
+    $("#brick-container").on("mousemove", function (event) {
         placeGhostBrick(event.pageX, event.pageY, ghostBrick);
     });
-    $("#brick-container").on("click", function(event) {
+    $("#brick-container").on("click", function (event) {
         let brickId = getBrickIdAt(ghostBrick.getX(), ghostBrick.getY());
         if (brickId < 0) {
             bricks.set(brickSeq, ghostBrick.clone());
@@ -236,11 +236,11 @@ function initLevelEditorMode() {
             $('#brick-' + brickId).remove();
         }
     });
-    $("#level-editor-brick-strength ul li a").on("click", function(event) {
+    $("#level-editor-brick-strength ul li a").on("click", function (event) {
         ghostBrick.setStrength(parseInt(event.target.innerText));
     });
-    $("#level-editor-save-confirm").on("click", function(event) {
-        if (typeof(Storage) !== "undefined") {
+    $("#level-editor-save-confirm").on("click", function (event) {
+        if (typeof (Storage) !== "undefined") {
             let bricksJSON = JSON.stringify(Array.from(bricks.values()));
             let levelName = String($("#level-editor-save-name").val());
             localStorage.setItem(levelName, bricksJSON);
@@ -248,8 +248,8 @@ function initLevelEditorMode() {
             console.log("Error: Web Storage API is not supported");
         }
     });
-    $("#level-editor-open-confirm").on("click", function(event) {
-        if (typeof(Storage) !== "undefined") {
+    $("#level-editor-open-confirm").on("click", function (event) {
+        if (typeof (Storage) !== "undefined") {
             let levelName = String($("#level-editor-open-name").val());
             let bricksJSON = localStorage.getItem(levelName);
             if (bricksJSON == null) {
@@ -257,10 +257,10 @@ function initLevelEditorMode() {
                 console.log("Warning: Requested level does not exist");
                 return false;
             } else {
-                let bricksArray = <any[]> JSON.parse(bricksJSON);
+                let bricksArray = <any[]>JSON.parse(bricksJSON);
                 clearBoard();
                 for (let brick of bricksArray) {
-                    bricks.set(brickSeq, new Brick(brick.x, brick.y, brick.width, brick.height, brick.strength, brick.x, brick.y, new Powerup(0,0)));
+                    bricks.set(brickSeq, new Brick(brick.x, brick.y, brick.width, brick.height, brick.strength, brick.x, brick.y, new PowerUp(0, 0)));
                     $('#brick-container').append('<div id="brick-' + brickSeq + '"></div>');
                     brickSeq++;
                 }
@@ -269,9 +269,9 @@ function initLevelEditorMode() {
             console.log("Error: Web Storage API is not supported");
         }
     });
-    $("#level-editor-open-name").on("input", function(event) {
+    $("#level-editor-open-name").on("input", function (event) {
         let levelNamePrefix = String($("#level-editor-open-name").val());
-        $("#level-editor-open-list button").each(function(i, button) {
+        $("#level-editor-open-list button").each(function (i, button) {
             if (button.innerHTML.startsWith(levelNamePrefix)) {
                 $(button).show();
             } else {
@@ -282,12 +282,12 @@ function initLevelEditorMode() {
 }
 
 function computer() {
-    if ((ball.getX() - paddle.getX()-paddle.width*0.1) > paddle.width*0.2) {
+    if ((ball.getX() - paddle.getX() - paddle.width * 0.1) > paddle.width * 0.2) {
         if (paddle.getX() < window.innerWidth - paddle.width) {
             paddle.updatePosition('right');
         }
     }
-    else if ((ball.getX() - paddle.getX()-paddle.width*0.1) < paddle.width*0.2) {
+    else if ((ball.getX() - paddle.getX() - paddle.width * 0.1) < paddle.width * 0.2) {
         if (paddle.getX() > 0) {
             paddle.updatePosition('left');
         }
@@ -301,10 +301,8 @@ let timestep: number = 1000 / 120;
 let bStrength: number = 1;
 
 function update(delta: number) {
-    // Comment this line if you play by yourself
-    //computer(b1.positionX, pad.position);
     if (gameStart && gameMode != "LevelEditor") {
-        if(gameMode == 'AILAB'){
+        if (gameMode == 'AILAB') {
             console.log('ai running');
             computer();
         }
@@ -314,7 +312,7 @@ function update(delta: number) {
             paddle.updatePosition('right');
         } else if (ball.getVY() == 0) {
             document.querySelector<HTMLElement>("#hints")!.innerHTML = "Press space to drop the ball";
-            if (keysPressed.has('space') && !keysPressed.has('right') && !keysPressed.has('left')){
+            if (keysPressed.has('space') && !keysPressed.has('right') && !keysPressed.has('left')) {
                 ball.setVY(-.4);
                 document.querySelector<HTMLElement>("#hints")!.innerHTML = "";
             }
@@ -359,26 +357,30 @@ function update(delta: number) {
                 brick.strength = -1;
             }
         }
-    };
+    }
 }
 
 function drawLevelEditor() {
-    let scale: number = Math.min(window.innerWidth / BOARD_WIDTH, 
-                                 (window.innerHeight - HEADER_HEIGHT) / BOARD_HEIGHT);
+    let scale: number = Math.min(window.innerWidth / BOARD_WIDTH,
+        (window.innerHeight - HEADER_HEIGHT) / BOARD_HEIGHT);
     let xOffset: number = (window.innerWidth - (BOARD_WIDTH * scale)) / 2;
     let yOffset: number = ((window.innerHeight - HEADER_HEIGHT) - (BOARD_HEIGHT * scale)) / 2;
-    
+
     $('#game-container')
-        .css({ "left": xOffset,
-               "bottom": yOffset,
-               "width": BOARD_WIDTH * scale,
-               "height": BOARD_HEIGHT * scale });
+        .css({
+            "left": xOffset,
+            "bottom": yOffset,
+            "width": BOARD_WIDTH * scale,
+            "height": BOARD_HEIGHT * scale
+        });
     $('#brick-container')
-        .css({ "left": xOffset,
-                "bottom": ((BOARD_HEIGHT - BRICK_AREA_HEIGHT) * scale) + yOffset,
-                "width": BOARD_WIDTH * scale,
-                "height": BRICK_AREA_HEIGHT * scale });
-                     
+        .css({
+            "left": xOffset,
+            "bottom": ((BOARD_HEIGHT - BRICK_AREA_HEIGHT) * scale) + yOffset,
+            "width": BOARD_WIDTH * scale,
+            "height": BRICK_AREA_HEIGHT * scale
+        });
+
     $('#level-editor-ghost-brick')
         .css({ "left": (ghostBrick.getLeftX() * scale) + xOffset,
                "bottom": (ghostBrick.getBottomY() * scale) + yOffset,
@@ -398,29 +400,35 @@ function drawLevelEditor() {
 
 function drawGame() {
     if (gameStart) {
-        let scale: number = Math.min(window.innerWidth / BOARD_WIDTH, 
-                                     (window.innerHeight - HEADER_HEIGHT) / BOARD_HEIGHT);
+        let scale: number = Math.min(window.innerWidth / BOARD_WIDTH,
+            (window.innerHeight - HEADER_HEIGHT) / BOARD_HEIGHT);
         let xOffset: number = (window.innerWidth - (BOARD_WIDTH * scale)) / 2;
         let yOffset: number = ((window.innerHeight - HEADER_HEIGHT) - (BOARD_HEIGHT * scale)) / 2;
-        $("#score").text("Score: " + gameState.getScore());
-        $("#lives").text("Lives: " + gameState.getLives());
-        $('#paddle').css({ "left": (paddle.getLeftX() * scale) + xOffset,
-                           "bottom": (paddle.getBottomY() * scale) + yOffset,
-                           "height": paddle.getHeight() * scale,
-                           "width": paddle.getWidth() * scale });
-        $('#ball').css({ "left": ((ball.getX() - ball.getRadius()) * scale) + xOffset, 
-                         "bottom": ((ball.getY() - ball.getRadius()) * scale) + yOffset,
-                         "height": (ball.getRadius() * 2) * scale,
-                         "width": (ball.getRadius() * 2) * scale });
-        $('#game-container').css({ "left": xOffset,
-                                   "bottom": yOffset,
-                                   "width": BOARD_WIDTH * scale,
-                                   "height": BOARD_HEIGHT * scale });
-        $('#brick-container').css({ "left": xOffset,
-                                    "bottom": ((BOARD_HEIGHT - BRICK_AREA_HEIGHT) * scale) + yOffset,
-                                    "width": BOARD_WIDTH * scale,
-                                    "height": BRICK_AREA_HEIGHT * scale });
-        
+        $('#paddle').css({
+            "left": (paddle.getLeftX() * scale) + xOffset,
+            "bottom": (paddle.getBottomY() * scale) + yOffset,
+            "height": paddle.getHeight() * scale,
+            "width": paddle.getWidth() * scale
+        });
+        $('#ball').css({
+            "left": ((ball.getX() - ball.getRadius()) * scale) + xOffset,
+            "bottom": ((ball.getY() - ball.getRadius()) * scale) + yOffset,
+            "height": (ball.getRadius() * 2) * scale,
+            "width": (ball.getRadius() * 2) * scale
+        });
+        $('#game-container').css({
+            "left": xOffset,
+            "bottom": yOffset,
+            "width": BOARD_WIDTH * scale,
+            "height": BOARD_HEIGHT * scale
+        });
+        $('#brick-container').css({
+            "left": xOffset,
+            "bottom": ((BOARD_HEIGHT - BRICK_AREA_HEIGHT) * scale) + yOffset,
+            "width": BOARD_WIDTH * scale,
+            "height": BRICK_AREA_HEIGHT * scale
+        });
+
         for (const [i, brick] of bricks) {
             $('#brick-' + i)
                 .css({ "left": (brick.getLeftX() * scale) + xOffset,
@@ -444,6 +452,10 @@ function panic() {
     delta = 0;
 }
 
+function getRndInteger(min: number, max: number ) {
+    return Math.floor(Math.random() * (max - min) ) + min;
+}
+
 function mainLoop(timestamp: number) {
     // Throttle the frame rate
     if (timestamp < lastFrameTimeMs + (1000 / maxFPS)) {
@@ -452,7 +464,7 @@ function mainLoop(timestamp: number) {
     }
     delta += timestamp - lastFrameTimeMs;
     lastFrameTimeMs = timestamp;
-    
+
     let numUpdateSteps: number = 0;
     while (delta >= timestep) {
         update(timestep);
