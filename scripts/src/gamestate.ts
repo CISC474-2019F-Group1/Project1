@@ -26,10 +26,6 @@ class GameState {
             this.lives = 3;
         } else if (this.gameMode == "HardCoreMode") {
             this.lives = 1;
-        } else if (this.gameMode == "AILab") {
-
-        } else if (this.gameMode == "LevelEditor") {
-
         }
     }
 
@@ -43,11 +39,7 @@ class GameState {
         } else if (this.gameMode == "HardCoreMode") {
             $("#lives").text(`Lives: ${this.lives}`);
             $("#score").text(`Score: ${this.score}`);
-        } else if (this.gameMode == "AILab") {
-
-        } else if (this.gameMode == "LevelEditor") {
-        
-        }
+        } 
     }
 
     endPowerUp() {
