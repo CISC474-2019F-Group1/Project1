@@ -55,7 +55,6 @@ class Ball {
                 } else {
                     gameState.incrementScoreBy(1);
                 }
-
                 return;
             }
         }
@@ -85,13 +84,16 @@ class Ball {
             this.vx = 0;
             this.vy = 0;
             this.radius = 10;
-            if (gameState.getGameMode() != "zenMode") {
-                gameState.decrementLives();
-                if (gameState.getLives() < 1) {
+            if (gameState.getGameMode() != "ZenMode") { gameState.decrementLives(); }
+            if (gameState.getLives() < 1) {
+                if (gameState.getGameMode() == "NormalMode") {
                     gameState.decrementScoreBy(gameState.getScore());
                     for (let i: number = 0; i < 3; i++) { gameState.incrementLives(); }
+                } else if (gameState.getGameMode() == "HardCoreMode") {
+                    gameState.decrementScoreBy(gameState.getScore());
+                    gameState.incrementLives();
                 }
-            } 
+            }
             return;
         }
 
@@ -112,7 +114,6 @@ class Ball {
                 // Collision with vertical side
                 this.vx = -this.vx;
             }
-            return;
         }
     }
 

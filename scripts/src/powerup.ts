@@ -41,7 +41,6 @@ class PowerUp {
 
     updatePowerUp() {
         if (this.state === 'falling') { this.y -= 1 }
-        if (this.checkCollideRect(paddle)) { console.log("Collided") }
     }
 
     checkCollideRect(rect: Rectangle) {
