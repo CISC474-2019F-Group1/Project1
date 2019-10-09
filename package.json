@@ -1,5 +1,5 @@
 {
-  "name": "smittys-bricks",
+  "name": "project1",
   "version": "1.0.0",
   "description": "A simple brick-breaker clone to showcase DOM manipulation",
   "main": "index.js",
